@@ -1,0 +1,189 @@
+<!-- ===== src/app/student/event-list/event-list.component.html ===== -->
+<!-- CO1: Card-based event display -->
+<div class="events-container">
+  <div class="events-header">
+    <h1>Available Volunteer Events</h1>
+    <p>Browse and participate in NGO activities</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section card">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Search</label>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (input)="applyFilters()"
+          placeholder="Search events...">
+      </div>
+
+      <div class="filter-group">
+        <label>Status</label>
+        <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <option value="all">All Status</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Activity Type</label>
+        <select [(ngModel)]="selectedActivity" (change)="applyFilters()">
+          <option value="all">All Types</option>
+          <option *ngFor="let type of activityTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading events...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <!-- Events Grid -->
+  <div *ngIf="!loading && !error" class="events-grid">
+    <div class="event-card" *ngFor="let event of filteredEvents">
+      <div class="event-status" [ngClass]="'status-' + event.status">
+        {{ event.status | uppercase }}
+      </div>
+      
+      <h3>{{ event.title }}</h3>
+      <p class="event-description">{{ event.description | slice:0:120 }}...</p>
+      
+      <div class="event-details">
+        <div class="detail-item">
+          <span class="icon">🏢</span>
+          <span>{{ event.ngo.name }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="icon">📅</span>
+          <span>{{ event.eventDate | date:'MMM dd, yyyy' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="icon">🏷️</span>
+          <span>{{ event.activityType }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="icon">⭐</span>
+          <span>{{ event.pointsAwarded }} AICTE Points</span>
+        </div>
+      </div>
+
+      <div class="event-actions">
+
+  <!-- Participant count -->
+  <div class="participant-info">
+    <span class="participants-count">
+      {{ event.currentParticipants }} / {{ event.maxParticipants }} registered
+    </span>
+
+    <span class="spots-left" *ngIf="!isEventFull(event)">
+      ({{ event.maxParticipants - event.currentParticipants }} spots left)
+    </span>
+
+    <span class="event-full" *ngIf="isEventFull(event)">
+      Event Full!
+    </span>
+  </div>
+
+  <!-- View Details -->
+  <button class="btn-secondary" (click)="viewDetails(event)">
+    View Details
+  </button>
+
+  <!-- Registration buttons (UPCOMING only) -->
+  <ng-container *ngIf="event.status === 'upcoming'">
+
+    <!-- Register -->
+    <button
+      *ngIf="!isRegistered(event._id) && !isEventFull(event)"
+      class="btn-primary"
+      (click)="registerForEvent(event._id)"
+      [disabled]="registering.has(event._id)">
+      {{ registering.has(event._id) ? 'Registering...' : '✓ Register' }}
+    </button>
+
+    <!-- Registered -->
+    <button
+      *ngIf="isRegistered(event._id)"
+      class="btn-registered"
+      (click)="cancelRegistration(event._id)">
+      ✓ Registered (Cancel?)
+    </button>
+
+    <!-- Full -->
+    <button
+      *ngIf="!isRegistered(event._id) && isEventFull(event)"
+      class="btn-disabled"
+      disabled>
+      Event Full
+    </button>
+
+  </ng-container>
+
+  <!-- Submit Proof (COMPLETED + REGISTERED) -->
+  <button
+    *ngIf="event.status === 'completed' && isRegistered(event._id)"
+    class="btn-success"
+    (click)="openSubmitModal(event)">
+    Submit Proof
+  </button>
+
+</div>
+
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && filteredEvents.length === 0" class="empty-state card">
+    <p>No events found matching your criteria</p>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()" *ngIf="selectedEvent">
+    <button class="modal-close" (click)="closeModal()">×</button>
+    <h2>{{ selectedEvent.title }}</h2>
+    <p><strong>NGO:</strong> {{ selectedEvent.ngo.name }}</p>
+    <p><strong>Description:</strong> {{ selectedEvent.description }}</p>
+    <p><strong>Date:</strong> {{ selectedEvent.eventDate | date:'fullDate' }}</p>
+    <p><strong>Location:</strong> {{ selectedEvent.location || 'TBA' }}</p>
+    <p><strong>Activity Type:</strong> {{ selectedEvent.activityType }}</p>
+    <p><strong>Points:</strong> {{ selectedEvent.pointsAwarded }} AICTE Points</p>
+    <p><strong>Max Participants:</strong> {{ selectedEvent.maxParticipants }}</p>
+  </div>
+</div>
+
+<!-- Submit Proof Modal -->
+<div class="modal-overlay" *ngIf="showSubmitModal" (click)="closeSubmitModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeSubmitModal()">×</button>
+    <h2>Submit Proof for {{ selectedEvent?.title }}</h2>
+    
+    <div class="form-group">
+      <label>Proof Type</label>
+      <select [(ngModel)]="submissionForm.proofType">
+        <option value="url">URL Link</option>
+        <option value="image">Image Link</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Proof Data</label>
+      <input 
+        type="text" 
+        [(ngModel)]="submissionForm.proofData"
+        [placeholder]="submissionForm.proofType === 'url' ? 'https://example.com/proof' : 'https://example.com/image.jpg'">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeSubmitModal()">Cancel</button>
+      <button 
+        class="btn-primary" 
+        (click)="submitProof()"
+        [disabled]="!submissionForm.proofData || submitting">
+        {{ submitting ? 'Submitting...' : 'Submit' }}
+      </button>
+    </div>
+  </div>
+</div>

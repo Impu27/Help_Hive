@@ -1,0 +1,82 @@
+<!-- ===== src/app/auth/register/register.component.html ===== -->
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>🤝 Help-Hive</h1>
+      <p>Create Student Account</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <h2>Register</h2>
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          formControlName="name" 
+          placeholder="John Doe"
+          [class.error]="name?.invalid && name?.touched">
+        <div class="error-message" *ngIf="name?.invalid && name?.touched">
+          <span *ngIf="name?.errors?.['required']">Name is required</span>
+          <span *ngIf="name?.errors?.['minlength']">Name must be at least 2 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="your.email@college.edu"
+          [class.error]="email?.invalid && email?.touched">
+      </div>
+
+      <div class="form-group">
+        <label for="studentId">Student ID</label>
+        <input 
+          type="text" 
+          id="studentId" 
+          formControlName="studentId" 
+          placeholder="STU2024001"
+          [class.error]="studentId?.invalid && studentId?.touched">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          placeholder="Min 6 characters"
+          [class.error]="password?.invalid && password?.touched">
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          formControlName="confirmPassword" 
+          placeholder="Re-enter password"
+          [class.error]="confirmPassword?.invalid && confirmPassword?.touched">
+        <div class="error-message" *ngIf="confirmPassword?.errors?.['passwordMismatch'] && confirmPassword?.touched">
+          Passwords do not match
+        </div>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || loading">
+        {{ loading ? 'Registering...' : 'Register' }}
+      </button>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a routerLink="/login">Login here</a></p>
+      </div>
+    </form>
+  </div>
+</div>

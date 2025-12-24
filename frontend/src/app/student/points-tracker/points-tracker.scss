@@ -1,0 +1,280 @@
+/* ===== src/app/student/points-tracker/points-tracker.component.scss ===== */
+
+.points-tracker-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.tracker-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    color: #1a2332;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  p {
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+/* Progress Card */
+.progress-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  text-align: center;
+
+  h2 {
+    color: #1a2332;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.progress-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 1.5rem;
+
+  svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+
+  .progress-bg {
+    fill: none;
+    stroke: #e0e0e0;
+    stroke-width: 10;
+  }
+
+  .progress-fill {
+    fill: none;
+    stroke: #f4b400;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+    transition: stroke-dashoffset 1s ease;
+  }
+
+  .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    h3 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #f4b400;
+      margin: 0;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #666;
+      margin: 0.5rem 0 0 0;
+    }
+  }
+}
+
+.progress-label {
+  color: #666;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  &.success h3 {
+    color: #34a853;
+  }
+
+  &.warning h3 {
+    color: #ff9800;
+  }
+
+  &.danger h3 {
+    color: #dc3545;
+  }
+}
+
+/* Submissions Section */
+.submissions-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  h2 {
+    color: #1a2332;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Submissions Table */
+.submissions-table {
+  .table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    align-items: center;
+
+    &.header {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: #1a2332;
+      border-radius: 8px 8px 0 0;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    &:not(.header) {
+      transition: background 0.2s;
+
+      &:hover {
+        background: #f9f9f9;
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    strong {
+      color: #1a2332;
+      font-size: 1rem;
+    }
+
+    p {
+      color: #666;
+      font-size: 0.875rem;
+      margin: 0.25rem 0 0 0;
+    }
+  }
+}
+
+.review-notes {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.status-badge {
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-pending {
+  background: #fff4e6;
+  color: #ff9800;
+}
+
+.status-approved {
+  background: #e8f5e9;
+  color: #34a853;
+}
+
+.status-rejected {
+  background: #ffebee;
+  color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .points-tracker-container {
+    padding: 1rem;
+  }
+
+  .progress-circle {
+    width: 160px;
+    height: 160px;
+
+    .progress-text h3 {
+      font-size: 2.5rem;
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .submissions-table .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 1rem;
+
+    &.header {
+      display: none;
+    }
+
+    > div::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #1a2332;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+  }
+}

@@ -1,0 +1,120 @@
+<!-- ===== src/app/admin/review-submissions/review-submissions.component.html ===== -->
+
+<div class="review-container">
+  <div class="page-header">
+    <h1>Review Submissions 📝</h1>
+    <p>Approve or reject student proof submissions</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading submissions...</div>
+
+  <div *ngIf="!loading && submissions.length === 0" class="empty-state card">
+    <div class="empty-icon">✅</div>
+    <h3>All Caught Up!</h3>
+    <p>No pending submissions to review at the moment.</p>
+    <a routerLink="/admin/dashboard" class="btn-primary">Back to Dashboard</a>
+  </div>
+
+  <div *ngIf="!loading && submissions.length > 0" class="submissions-grid">
+    <div class="submission-card card" *ngFor="let submission of submissions">
+      <!-- Student Info -->
+      <div class="submission-header">
+        <div class="student-info">
+          <h3>{{ submission.student.name }}</h3>
+          <p class="student-id">{{ submission.student.studentId }}</p>
+          <p class="student-email">{{ submission.student.email }}</p>
+        </div>
+        <div class="submission-date">
+          <small>Submitted</small>
+          <p>{{ submission.createdAt | date:'MMM dd, yyyy' }}</p>
+          <p>{{ submission.createdAt | date:'shortTime' }}</p>
+        </div>
+      </div>
+
+      <!-- Event Info -->
+      <div class="event-info">
+        <h4>{{ submission.event.title }}</h4>
+        <div class="event-meta">
+          <span class="meta-item">
+            <strong>Activity:</strong> {{ submission.event.activityType }}
+          </span>
+          <span class="meta-item points">
+            <strong>Points:</strong> {{ submission.event.pointsAwarded }} ⭐
+          </span>
+        </div>
+      </div>
+
+      <!-- Proof Info -->
+      <div class="proof-section">
+        <div class="proof-header">
+          <strong>Proof Submitted:</strong>
+          <span class="proof-type">{{ submission.proofType | uppercase }}</span>
+        </div>
+        <div class="proof-data">
+          <a [href]="submission.proofData" target="_blank" class="proof-link">
+            {{ submission.proofData }}
+          </a>
+          <button 
+            class="btn-view-proof" 
+            (click)="viewProof(submission.proofData, submission.proofType)">
+            View Proof 🔗
+          </button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="submission-actions">
+        <button 
+          class="btn-approve" 
+          (click)="openReviewModal(submission)">
+          ✓ Review
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal-overlay" *ngIf="showReviewModal" (click)="closeReviewModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()" *ngIf="selectedSubmission">
+    <button class="modal-close" (click)="closeReviewModal()">×</button>
+    
+    <h2>Review Submission</h2>
+    
+    <div class="review-details">
+      <p><strong>Student:</strong> {{ selectedSubmission.student.name }}</p>
+      <p><strong>Event:</strong> {{ selectedSubmission.event.title }}</p>
+      <p><strong>Points:</strong> {{ selectedSubmission.event.pointsAwarded }} AICTE Points</p>
+      <p><strong>Proof:</strong> 
+        <a [href]="selectedSubmission.proofData" target="_blank">
+          View Proof
+        </a>
+      </p>
+    </div>
+
+    <div class="form-group">
+      <label for="reviewNotes">Review Notes (Optional)</label>
+      <textarea 
+        id="reviewNotes"
+        [(ngModel)]="reviewNotes"
+        rows="3"
+        placeholder="Add any comments or feedback...">
+      </textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button 
+        class="btn-reject" 
+        (click)="reviewSubmission('rejected')"
+        [disabled]="reviewing">
+        {{ reviewing ? 'Processing...' : '✗ Reject' }}
+      </button>
+      <button 
+        class="btn-approve" 
+        (click)="reviewSubmission('approved')"
+        [disabled]="reviewing">
+        {{ reviewing ? 'Processing...' : '✓ Approve' }}
+      </button>
+    </div>
+  </div>
+</div>

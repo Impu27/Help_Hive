@@ -1,0 +1,375 @@
+/* ===== src/app/student/event-list/event-list.component.scss ===== */
+
+.events-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.events-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    color: #1a2332;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  p {
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+/* Filters */
+.filters-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.filter-group {
+  label {
+    display: block;
+    color: #1a2332;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s;
+
+    &:focus {
+      outline: none;
+      border-color: #f4b400;
+    }
+  }
+}
+
+.loading, .error-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.error-message {
+  color: #dc3545;
+  background: #fff5f5;
+  border-radius: 8px;
+}
+
+/* Events Grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.event-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .event-status {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &.status-upcoming {
+      background: #e3f2fd;
+      color: #2196f3;
+    }
+
+    &.status-ongoing {
+      background: #fff4e6;
+      color: #ff9800;
+    }
+
+    &.status-completed {
+      background: #e8f5e9;
+      color: #34a853;
+    }
+
+    &.status-cancelled {
+      background: #ffebee;
+      color: #dc3545;
+    }
+  }
+
+  h3 {
+    padding: 1.5rem 1.5rem 0.5rem;
+    color: #1a2332;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .event-description {
+    padding: 0 1.5rem;
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .event-details {
+    padding: 0 1.5rem 1rem;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #666;
+
+    .icon {
+      font-size: 1.1rem;
+    }
+  }
+
+  .event-actions {
+    padding: 1rem 1.5rem;
+    background: #f5f5f5;
+    display: flex;
+    gap: 0.75rem;
+
+    button {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.empty-state {
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s;
+
+  h2 {
+    color: #1a2332;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-right: 2rem;
+  }
+
+  p {
+    margin: 0.75rem 0;
+    color: #666;
+    line-height: 1.6;
+
+    strong {
+      color: #1a2332;
+      display: inline-block;
+      min-width: 120px;
+    }
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: #666;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s;
+
+  &:hover {
+    background: #f5f5f5;
+    color: #1a2332;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+
+  button {
+    flex: 1;
+  }
+}
+
+.participant-info {
+  width: 100%;
+  padding: 0.75rem;
+  background: #f5f5f5;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 0.75rem;
+
+  .participants-count {
+    font-weight: 600;
+    color: #1a2332;
+    font-size: 0.95rem;
+  }
+
+  .spots-left {
+    color: #34a853;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+  }
+
+  .event-full {
+    color: #dc3545;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+  }
+}
+
+.btn-registered {
+  background: #34a853;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: #dc3545;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-disabled {
+  background: #e0e0e0;
+  color: #999;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: not-allowed;
+}
+
+.btn-success {
+  background: #f4b400;
+  color: #1a2332;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: #e0a200;
+    transform: translateY(-2px);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .events-container {
+    padding: 1rem;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+  }
+}

@@ -1,0 +1,156 @@
+<!-- ===== src/app/admin/create-event/create-event.component.html ===== -->
+
+<div class="create-event-container">
+  <div class="page-header">
+    <h1>Create New Event 🎯</h1>
+    <p>Add a volunteering opportunity for students</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading NGOs...</div>
+
+  <div *ngIf="!loading" class="form-card card">
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">Event Title *</label>
+        <input 
+          type="text" 
+          id="title" 
+          formControlName="title"
+          placeholder="e.g., Beach Cleanup Drive"
+          [class.error]="eventForm.get('title')?.invalid && eventForm.get('title')?.touched">
+        <div class="error-message" *ngIf="eventForm.get('title')?.invalid && eventForm.get('title')?.touched">
+          <span *ngIf="eventForm.get('title')?.errors?.['required']">Title is required</span>
+          <span *ngIf="eventForm.get('title')?.errors?.['minlength']">Title must be at least 5 characters</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description *</label>
+        <textarea 
+          id="description" 
+          formControlName="description"
+          rows="4"
+          placeholder="Describe the event and what volunteers will do..."
+          [class.error]="eventForm.get('description')?.invalid && eventForm.get('description')?.touched">
+        </textarea>
+        <div class="error-message" *ngIf="eventForm.get('description')?.invalid && eventForm.get('description')?.touched">
+          <span *ngIf="eventForm.get('description')?.errors?.['required']">Description is required</span>
+          <span *ngIf="eventForm.get('description')?.errors?.['minlength']">Description must be at least 20 characters</span>
+        </div>
+      </div>
+
+      <!-- NGO Selection -->
+      <div class="form-group">
+        <label for="ngo">Select NGO *</label>
+        <select 
+          id="ngo" 
+          formControlName="ngo"
+          [class.error]="eventForm.get('ngo')?.invalid && eventForm.get('ngo')?.touched">
+          <option value="">Choose an NGO</option>
+          <option *ngFor="let ngo of ngos" [value]="ngo._id">
+            {{ ngo.name }}
+          </option>
+        </select>
+        <div class="ngo-info" *ngIf="getSelectedNgo()">
+          <p><strong>Causes:</strong> {{ getSelectedNgo()?.causes?.join(', ') }}</p>
+          <p *ngIf="getSelectedNgo()?.officialWebsite">
+            <strong>Website:</strong> 
+            <a [href]="getSelectedNgo()?.officialWebsite" target="_blank">{{ getSelectedNgo()?.officialWebsite }}</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Activity Type -->
+      <div class="form-group">
+        <label for="activityType">Activity Type *</label>
+        <select 
+          id="activityType" 
+          formControlName="activityType"
+          [class.error]="eventForm.get('activityType')?.invalid && eventForm.get('activityType')?.touched">
+          <option value="">Select activity type</option>
+          <option *ngFor="let type of activityTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <!-- Two Column Layout -->
+      <div class="form-row">
+        <!-- Points Awarded -->
+        <div class="form-group">
+          <label for="pointsAwarded">AICTE Points *</label>
+          <input 
+            type="number" 
+            id="pointsAwarded" 
+            formControlName="pointsAwarded"
+            min="1"
+            max="100"
+            placeholder="10"
+            [class.error]="eventForm.get('pointsAwarded')?.invalid && eventForm.get('pointsAwarded')?.touched">
+          <small>Points awarded upon approval (1-100)</small>
+        </div>
+
+        <!-- Max Participants -->
+        <div class="form-group">
+          <label for="maxParticipants">Max Participants *</label>
+          <input 
+            type="number" 
+            id="maxParticipants" 
+            formControlName="maxParticipants"
+            min="1"
+            placeholder="50">
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="eventDate">Event Start Date *</label>
+          <input 
+            type="datetime-local" 
+            id="eventDate" 
+            formControlName="eventDate"
+            [class.error]="eventForm.get('eventDate')?.invalid && eventForm.get('eventDate')?.touched">
+        </div>
+
+        <div class="form-group">
+          <label for="eventEndDate">Event End Date</label>
+          <input 
+            type="datetime-local" 
+            id="eventEndDate" 
+            formControlName="eventEndDate">
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input 
+          type="text" 
+          id="location" 
+          formControlName="location"
+          placeholder="e.g., Marina Beach, Chennai">
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" routerLink="/admin/dashboard">
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="btn-primary" 
+          [disabled]="eventForm.invalid || submitting">
+          {{ submitting ? 'Creating...' : 'Create Event' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

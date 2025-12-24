@@ -1,0 +1,79 @@
+<!-- ===== src/app/student/points-tracker/points-tracker.component.html ===== -->
+<!-- CO1: Impact Journey visualization -->
+<div class="points-tracker-container">
+  <div class="tracker-header">
+    <h1>📊 AICTE Points Tracker</h1>
+    <p>Monitor your volunteering achievements</p>
+  </div>
+
+  <!-- Progress Card -->
+  <div class="progress-card card">
+    <h2>Your Progress</h2>
+    <div class="progress-circle">
+      <svg viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="50" class="progress-bg"></circle>
+        <circle 
+          cx="60" 
+          cy="60" 
+          r="50" 
+          class="progress-fill"
+          [style.stroke-dashoffset]="314 - (314 * progressPercentage / 100)">
+        </circle>
+      </svg>
+      <div class="progress-text">
+        <h3>{{ totalPoints }}</h3>
+        <p>Points</p>
+      </div>
+    </div>
+    <p class="progress-label">{{ progressPercentage }}% of 100 point target</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card success">
+      <h3>{{ stats.approved }}</h3>
+      <p>Approved</p>
+    </div>
+    <div class="stat-card warning">
+      <h3>{{ stats.pending }}</h3>
+      <p>Pending</p>
+    </div>
+    <div class="stat-card danger">
+      <h3>{{ stats.rejected }}</h3>
+      <p>Rejected</p>
+    </div>
+  </div>
+
+  <!-- Submissions History -->
+  <div class="submissions-section card">
+    <h2>Submission History</h2>
+    <div *ngIf="loading" class="loading">Loading...</div>
+    
+    <div *ngIf="!loading && submissions.length === 0" class="empty-state">
+      <p>No submissions yet. Start participating in events!</p>
+    </div>
+
+    <div class="submissions-table" *ngIf="!loading && submissions.length > 0">
+      <div class="table-row header">
+        <div>Event</div>
+        <div>Date</div>
+        <div>Points</div>
+        <div>Status</div>
+      </div>
+      <div class="table-row" *ngFor="let sub of submissions">
+        <div>
+          <strong>{{ sub.event.title }}</strong>
+          <p>{{ sub.event.activityType }}</p>
+        </div>
+        <div>{{ sub.createdAt | date:'MMM dd, yyyy' }}</div>
+        <div>{{ sub.event.pointsAwarded }} pts</div>
+        <div>
+          <span class="status-badge" [ngClass]="getStatusClass(sub.status)">
+            {{ sub.status | uppercase }}
+          </span>
+          <p *ngIf="sub.reviewNotes" class="review-notes">{{ sub.reviewNotes }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

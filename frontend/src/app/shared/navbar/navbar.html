@@ -1,0 +1,37 @@
+<!-- ===== src/app/shared/navbar/navbar.component.html ===== -->
+<!-- CO1: Role-based dynamic navigation -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <h2>🤝 Help-Hive</h2>
+    </div>
+
+    <button class="navbar-toggle" (click)="toggleMenu()" *ngIf="currentUser">
+      ☰
+    </button>
+
+    <div class="navbar-menu" [class.active]="isMenuOpen" *ngIf="currentUser">
+      <!-- Student Links -->
+      <ng-container *ngIf="authService.isStudent()">
+        <a routerLink="/student/dashboard" routerLinkActive="active" (click)="isMenuOpen = false">Dashboard</a>
+        <a routerLink="/student/events" routerLinkActive="active" (click)="isMenuOpen = false">Events</a>
+        <a routerLink="/student/points" routerLinkActive="active" (click)="isMenuOpen = false">My Points</a>
+      </ng-container>
+
+      <!-- Admin Links -->
+      <ng-container *ngIf="authService.isAdmin()">
+        <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="isMenuOpen = false">Dashboard</a>
+        <a routerLink="/admin/create-event" routerLinkActive="active" (click)="isMenuOpen = false">Create Event</a>
+        <a routerLink="/admin/review-submissions" routerLinkActive="active" (click)="isMenuOpen = false">Review Submissions</a>
+      </ng-container>
+
+      <div class="navbar-user">
+        <span class="user-info">
+          {{ currentUser?.name ?? 'User' }}
+          <span class="user-role">({{ currentUser?.role ?? 'guest' }})</span>
+        </span>
+        <button class="btn-logout" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>

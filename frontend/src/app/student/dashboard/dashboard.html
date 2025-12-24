@@ -1,0 +1,125 @@
+<!-- ===== src/app/student/dashboard/dashboard.component.html ===== -->
+<!-- CO1: Card-based Impact Dashboard -->
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Welcome, {{ currentUser?.name }}! 👋</h1>
+    <p>Track your volunteering journey and AICTE points</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading dashboard...</div>
+
+  <div *ngIf="!loading" class="dashboard-content">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-content">
+          <h3>{{ stats.totalPoints }}</h3>
+          <p>Total AICTE Points</p>
+        </div>
+      </div>
+
+      <div class="stat-card success">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>{{ stats.approvedSubmissions }}</h3>
+          <p>Approved Activities</p>
+        </div>
+      </div>
+
+      <div class="stat-card warning">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <h3>{{ stats.pendingSubmissions }}</h3>
+          <p>Pending Reviews</p>
+        </div>
+      </div>
+
+      <div class="stat-card info">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <h3>{{ stats.eventsParticipated }}</h3>
+          <p>Events Participated</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Impact Journey Progress -->
+    <div class="progress-section card">
+      <h2>🚀 Your Impact Journey</h2>
+      <p>Progress towards 100 AICTE Points</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <p class="progress-text">{{ stats.totalPoints }} / 100 Points ({{ progressPercentage }}%)</p>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div class="section card">
+      <h2>🎯 Upcoming Events</h2>
+      <div *ngIf="upcomingEvents.length === 0" class="empty-state">
+        <p>No upcoming events available</p>
+      </div>
+      <div class="events-grid" *ngIf="upcomingEvents.length > 0">
+        <div class="event-card" *ngFor="let event of upcomingEvents">
+          <h3>{{ event.title }}</h3>
+          <p class="ngo-name">🏢 {{ event.ngo.name }}</p>
+          <p class="event-date">📅 {{ event.eventDate | date:'MMM dd, yyyy' }}</p>
+          <p class="points">⭐ {{ event.pointsAwarded }} Points</p>
+          <a routerLink="/student/events" class="btn-secondary">View Details</a>
+        </div>
+      </div>
+      <a routerLink="/student/events" class="btn-primary mt-3">View All Events</a>
+    </div>
+
+    <!-- My Registered Events -->
+<div class="section card" *ngIf="!loading">
+  <h2>📝 My Registered Events</h2>
+  <p class="section-subtitle">Events you've signed up for ({{ stats.registeredEvents }})</p>
+  
+  <div *ngIf="registeredEvents.length === 0" class="empty-state">
+    <p>You haven't registered for any events yet.</p>
+    <a routerLink="/student/events" class="btn-primary">Browse Events</a>
+  </div>
+  
+  <div class="events-grid" *ngIf="registeredEvents.length > 0">
+    <div class="event-card registered-card" *ngFor="let registration of registeredEvents">
+      <div class="registration-badge">{{ registration.status }}</div>
+      <h3>{{ registration.event.title }}</h3>
+      <p class="ngo-name">🏢 {{ registration.event.ngo.name }}</p>
+      <p class="event-date">📅 {{ registration.event.eventDate | date:'MMM dd, yyyy' }}</p>
+      <p class="event-status">
+        Status: <span [class]="'status-' + registration.event.status">
+          {{ registration.event.status | uppercase }}
+        </span>
+      </p>
+      <p class="points">⭐ {{ registration.event.pointsAwarded }} Points</p>
+      <p class="registered-on">Registered: {{ registration.registrationDate | date:'short' }}</p>
+      
+      <div class="event-actions">
+        <a [routerLink]="['/student/events']" class="btn-secondary">View Event</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Recent Submissions -->
+    <div class="section card">
+      <h2>📝 Recent Submissions</h2>
+      <div *ngIf="recentSubmissions.length === 0" class="empty-state">
+        <p>No submissions yet</p>
+      </div>
+      <div class="submissions-list" *ngIf="recentSubmissions.length > 0">
+        <div class="submission-item" *ngFor="let sub of recentSubmissions">
+          <div class="submission-info">
+            <h4>{{ sub.event.title }}</h4>
+            <p>{{ sub.createdAt | date:'short' }}</p>
+          </div>
+          <span class="status-badge" [ngClass]="'status-' + sub.status">
+            {{ sub.status | uppercase }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

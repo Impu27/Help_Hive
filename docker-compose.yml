@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6
+    container_name: helphive-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-admin123}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - helphive-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: helphive-backend
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-admin123}@mongodb:27017/helphive?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-change_this_secret_key_in_production}
+      - PORT=3000
+      - FRONTEND_URL=http://localhost:4200
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - helphive-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: helphive-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - helphive-network
+
+networks:
+  helphive-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

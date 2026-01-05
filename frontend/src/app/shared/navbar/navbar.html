@@ -1,37 +1,89 @@
 <!-- ===== src/app/shared/navbar/navbar.component.html ===== -->
-<!-- CO1: Role-based dynamic navigation -->
-<nav class="navbar">
+<!-- FIXED: Navbar hidden on login/register + stable navigation -->
+
+<nav class="navbar" *ngIf="currentUser && !hideNavbar">
   <div class="navbar-container">
+
+    <!-- ================= BRAND ================= -->
     <div class="navbar-brand">
       <h2>🤝 Help-Hive</h2>
     </div>
 
-    <button class="navbar-toggle" (click)="toggleMenu()" *ngIf="currentUser">
+    <!-- ================= MOBILE TOGGLE ================= -->
+    <button
+      class="navbar-toggle"
+      (click)="toggleMenu()">
       ☰
     </button>
 
-    <div class="navbar-menu" [class.active]="isMenuOpen" *ngIf="currentUser">
-      <!-- Student Links -->
+    <!-- ================= MENU ================= -->
+    <div
+      class="navbar-menu"
+      [class.active]="isMenuOpen">
+
+      <!-- ================= STUDENT LINKS ================= -->
       <ng-container *ngIf="authService.isStudent()">
-        <a routerLink="/student/dashboard" routerLinkActive="active" (click)="isMenuOpen = false">Dashboard</a>
-        <a routerLink="/student/events" routerLinkActive="active" (click)="isMenuOpen = false">Events</a>
-        <a routerLink="/student/points" routerLinkActive="active" (click)="isMenuOpen = false">My Points</a>
+        <a
+          routerLink="/student/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="isMenuOpen = false">
+          Dashboard
+        </a>
+
+        <a
+          routerLink="/student/events"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="isMenuOpen = false">
+          Events
+        </a>
+
+        <a
+          routerLink="/student/points"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="isMenuOpen = false">
+          My Points
+        </a>
       </ng-container>
 
-      <!-- Admin Links -->
+      <!-- ================= ADMIN LINKS ================= -->
       <ng-container *ngIf="authService.isAdmin()">
-        <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="isMenuOpen = false">Dashboard</a>
-        <a routerLink="/admin/create-event" routerLinkActive="active" (click)="isMenuOpen = false">Create Event</a>
-        <a routerLink="/admin/review-submissions" routerLinkActive="active" (click)="isMenuOpen = false">Review Submissions</a>
+        <a
+          routerLink="/admin/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="isMenuOpen = false">
+          Dashboard
+        </a>
+
+        <a
+          routerLink="/admin/create-event"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="isMenuOpen = false">
+          Create Event
+        </a>
+
+        <a
+          routerLink="/admin/review-submissions"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="isMenuOpen = false">
+          Review Submissions
+        </a>
       </ng-container>
 
+      <!-- ================= USER INFO ================= -->
       <div class="navbar-user">
         <span class="user-info">
-          {{ currentUser?.name ?? 'User' }}
-          <span class="user-role">({{ currentUser?.role ?? 'guest' }})</span>
+          {{ currentUser.name }}
+          <span class="user-role">{{ currentUser.role }}</span>
         </span>
         <button class="btn-logout" (click)="logout()">Logout</button>
       </div>
+
     </div>
   </div>
 </nav>

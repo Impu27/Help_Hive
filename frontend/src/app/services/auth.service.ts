@@ -15,11 +15,26 @@ export class AuthService {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    // Check if running in browser before accessing localStorage
-    let storedUser = null;
+    let storedUser: User | null = null;
+
     if (isPlatformBrowser(this.platformId)) {
       const userStr = localStorage.getItem('user');
-      storedUser = userStr ? JSON.parse(userStr) : null;
+      const token = localStorage.getItem('token');
+
+      //  Restore session ONLY if BOTH user and token exist
+      if (userStr && token) {
+        try {
+          storedUser = JSON.parse(userStr);
+        } catch (e) {
+          console.error('Failed to parse stored user:', e);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        }
+      } else {
+        // Remove stale or incomplete session data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      }
     }
 
     this.currentUserSubject = new BehaviorSubject<User | null>(storedUser);

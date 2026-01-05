@@ -12,7 +12,7 @@
     <div class="empty-icon">✅</div>
     <h3>All Caught Up!</h3>
     <p>No pending submissions to review at the moment.</p>
-    <a routerLink="/admin/dashboard" class="btn-primary">Back to Dashboard</a>
+    <button class="btn-primary" routerLink="/admin/dashboard">Back to Dashboard</button>
   </div>
 
   <div *ngIf="!loading && submissions.length > 0" class="submissions-grid">

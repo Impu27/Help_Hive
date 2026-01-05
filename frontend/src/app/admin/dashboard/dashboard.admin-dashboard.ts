@@ -8,6 +8,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { take } from 'rxjs/operators'; // ✅ Added import
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -35,23 +36,27 @@ export class AdminDashboardComponent implements OnInit {
     this.loadStats();
   }
 
+  // --- Data Loading ---
   loadStats(): void {
     this.loading = true;
 
-    this.apiService.getDashboardStats().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.stats = response.data;
+    this.apiService.getDashboardStats()
+      .pipe(take(1)) // ✅ Added pipe for memory safety
+      .subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.stats = response.data;
+          }
+          this.loading = false;
+        },
+        error: (error: any) => {
+          console.error('Error loading stats:', error);
+          this.loading = false; // ✅ Ensure loading state clears on error
         }
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading stats:', error);
-        this.loading = false;
-      }
-    });
+      });
   }
 
+  // --- Statistics Logic ---
   getApprovalRate(): number {
     const total =
       this.stats.approvedSubmissions + this.stats.pendingSubmissions;

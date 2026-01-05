@@ -6,52 +6,81 @@
  * CO4: Update submissions via API
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { filter, take, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+
 import { Submission } from '../../models/interfaces';
 import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-review-submissions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './review-submissions.html',
   styleUrls: ['./review-submissions.scss']
 })
-export class ReviewSubmissionsComponent implements OnInit {
+export class ReviewSubmissionsComponent implements OnInit, OnDestroy {
   submissions: Submission[] = [];
   loading = false;
-  
+
   // Review modal
   selectedSubmission: Submission | null = null;
   showReviewModal = false;
   reviewNotes = '';
   reviewing = false;
 
-  constructor(private apiService: ApiService) {}
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    // 🔥 Reload data whenever this route is navigated to
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.loadPendingSubmissions();
+      });
+
+    // Initial load
     this.loadPendingSubmissions();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // --- Data Loading ---
   loadPendingSubmissions(): void {
     this.loading = true;
 
-    this.apiService.getPendingSubmissions().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.submissions = response.data;
+    this.apiService.getPendingSubmissions()
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          this.submissions = response.success && response.data
+            ? response.data
+            : [];
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading submissions:', error);
+          this.loading = false;
         }
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading submissions:', error);
-        this.loading = false;
-      }
-    });
+      });
   }
 
+  // --- Modal Management ---
   openReviewModal(submission: Submission): void {
     this.selectedSubmission = submission;
     this.showReviewModal = true;
@@ -64,6 +93,7 @@ export class ReviewSubmissionsComponent implements OnInit {
     this.reviewNotes = '';
   }
 
+  // --- Review Actions ---
   reviewSubmission(status: 'approved' | 'rejected'): void {
     if (!this.selectedSubmission) return;
 
@@ -74,28 +104,26 @@ export class ReviewSubmissionsComponent implements OnInit {
       reviewNotes: this.reviewNotes
     };
 
-    this.apiService.reviewSubmission(this.selectedSubmission._id, reviewData).subscribe({
-      next: (response) => {
-        if (response.success) {
-          alert(`Submission ${status}!`);
-          this.loadPendingSubmissions(); // Reload list
-          this.closeReviewModal();
+    this.apiService.reviewSubmission(this.selectedSubmission._id, reviewData)
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            alert(`Submission ${status}!`);
+            this.closeReviewModal();
+            this.loadPendingSubmissions();
+          }
+          this.reviewing = false;
+        },
+        error: (error) => {
+          alert(error.error?.message || 'Failed to review submission');
+          this.reviewing = false;
         }
-        this.reviewing = false;
-      },
-      error: (error) => {
-        alert(error.error?.message || 'Failed to review submission');
-        this.reviewing = false;
-      }
-    });
+      });
   }
 
+  // --- Helpers ---
   viewProof(proofData: string, proofType: string): void {
-    if (proofType === 'url') {
-      window.open(proofData, '_blank');
-    } else {
-      // For image links, open in new tab
-      window.open(proofData, '_blank');
-    }
+    window.open(proofData, '_blank');
   }
 }

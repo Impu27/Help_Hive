@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { take } from 'rxjs/operators';
 import { Event } from '../../models/interfaces';
 import { ApiService } from '../../services/api.service';
+
+type SubmissionStatus = 'pending' | 'approved' | 'rejected';
 
 @Component({
   selector: 'app-event-list',
@@ -17,15 +20,15 @@ export class EventListComponent implements OnInit {
   loading = false;
   error = '';
 
-  // Registration State Properties
-  myRegistrations: Set<string> = new Set(); // Store registered event IDs
-  registering: Set<string> = new Set();    // Track loading state per event
+  // ================= STATE =================
+  myRegistrations = new Set<string>();
+  mySubmissions = new Map<string, SubmissionStatus>();
+  registering = new Set<string>();
 
-  // Filters
+  // ================= FILTERS =================
   selectedStatus = 'all';
   selectedActivity = 'all';
   searchQuery = '';
-
   activityTypes = [
     'Community Service',
     'Environmental',
@@ -34,68 +37,98 @@ export class EventListComponent implements OnInit {
     'Other'
   ];
 
-  // Modal state
+  // ================= MODALS =================
   selectedEvent: Event | null = null;
   showModal = false;
   showSubmitModal = false;
+  submitting = false;
+
+  // ================= FILE UPLOAD =================
+  selectedFile: File | null = null;
   submissionForm = {
     proofType: 'url',
     proofData: ''
   };
-  submitting = false;
 
   constructor(private apiService: ApiService) {}
 
+  // =====================================================
+  // LIFECYCLE
+  // =====================================================
   ngOnInit(): void {
     this.loadEvents();
-    this.loadMyRegistrations(); // Called on initialization
+    this.loadMyRegistrations();
+    this.loadMySubmissions();
   }
 
-  // --- Data Loading Methods ---
-
+  // =====================================================
+  // DATA LOADERS
+  // =====================================================
   loadEvents(): void {
     this.loading = true;
-    this.error = '';
-
-    this.apiService.getEvents().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.events = response.data;
-          this.applyFilters();
+    this.apiService.getEvents()
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.events = response.data;
+            this.applyFilters();
+          }
+          this.loading = false;
+        },
+        error: () => {
+          this.error = 'Failed to load events.';
+          this.loading = false;
         }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load events. Please try again.';
-        this.loading = false;
-        console.error(err);
-      }
-    });
+      });
   }
 
   loadMyRegistrations(): void {
-    this.apiService.getMyRegistrations().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          // Convert array of registrations into a Set of IDs for O(1) lookup
-          this.myRegistrations = new Set(
-            response.data.map((r: any) => r.event._id)
-          );
+    this.apiService.getMyRegistrations()
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.myRegistrations = new Set(
+              response.data.map((r: any) => r.event._id)
+            );
+          }
         }
-      },
-      error: (error) => console.error('Error loading registrations:', error)
-    });
+      });
   }
 
-  // --- Logic Helpers ---
+  loadMySubmissions(): void {
+    this.apiService.getMySubmissions()
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          this.mySubmissions.clear();
+          if (response.success && response.data) {
+            response.data.forEach((sub: any) => {
+              const eventId = sub.event?._id || sub.event;
+              this.mySubmissions.set(eventId, sub.status);
+            });
+          }
+        },
+        error: (err) => console.error('Error loading submissions', err)
+      });
+  }
 
+  // =====================================================
+  // HELPERS
+  // =====================================================
   applyFilters(): void {
     this.filteredEvents = this.events.filter(event => {
-      const statusMatch = this.selectedStatus === 'all' || event.status === this.selectedStatus;
-      const activityMatch = this.selectedActivity === 'all' || event.activityType === this.selectedActivity;
-      const searchMatch = !this.searchQuery || 
+      const statusMatch =
+        this.selectedStatus === 'all' || event.status === this.selectedStatus;
+
+      const activityMatch =
+        this.selectedActivity === 'all' ||
+        event.activityType === this.selectedActivity;
+
+      const searchMatch =
+        !this.searchQuery ||
         event.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        event.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         event.ngo.name.toLowerCase().includes(this.searchQuery.toLowerCase());
 
       return statusMatch && activityMatch && searchMatch;
@@ -110,48 +143,81 @@ export class EventListComponent implements OnInit {
     return event.currentParticipants >= event.maxParticipants;
   }
 
-  // --- Action Methods ---
+  getSubmissionStatus(eventId: string): SubmissionStatus | null {
+    return this.mySubmissions.get(eventId) || null;
+  }
 
+  hasSubmitted(eventId: string): boolean {
+    return this.mySubmissions.has(eventId);
+  }
+
+  // =====================================================
+  // FILE HANDLING
+  // =====================================================
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  canSubmit(): boolean {
+    return this.submissionForm.proofType === 'url'
+      ? !!this.submissionForm.proofData
+      : !!this.selectedFile;
+  }
+
+  // =====================================================
+  // ACTIONS (🔥 FIXED)
+  // =====================================================
   registerForEvent(eventId: string): void {
     if (this.registering.has(eventId)) return;
-    
+
     this.registering.add(eventId);
 
-    this.apiService.registerForEvent(eventId).subscribe({
-      next: (response) => {
-        if (response.success) {
-          alert('Successfully registered for event!');
-          this.myRegistrations.add(eventId);
-          this.loadEvents(); // Refresh to update participant count
+    this.apiService.registerForEvent(eventId)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            // ✅ optimistic UI update
+            this.myRegistrations.add(eventId);
+
+            const event = this.events.find(e => e._id === eventId);
+            if (event) {
+              event.currentParticipants += 1;
+            }
+
+            this.applyFilters();
+          }
+          this.registering.delete(eventId);
+        },
+        error: () => {
+          this.registering.delete(eventId);
+          alert('Registration failed');
         }
-        this.registering.delete(eventId);
-      },
-      error: (error) => {
-        alert(error.error?.message || 'Failed to register for event');
-        this.registering.delete(eventId);
-      }
-    });
+      });
   }
 
   cancelRegistration(eventId: string): void {
-    if (!confirm('Are you sure you want to cancel your registration?')) return;
+    if (!confirm('Cancel registration?')) return;
 
-    this.apiService.cancelRegistration(eventId).subscribe({
-      next: (response) => {
-        if (response.success) {
-          alert('Registration cancelled successfully');
+    this.apiService.cancelRegistration(eventId)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
           this.myRegistrations.delete(eventId);
-          this.loadEvents(); // Refresh to update participant count
+
+          const event = this.events.find(e => e._id === eventId);
+          if (event && event.currentParticipants > 0) {
+            event.currentParticipants -= 1;
+          }
+
+          this.applyFilters();
         }
-      },
-      error: (error) => {
-        alert(error.error?.message || 'Failed to cancel registration');
-      }
-    });
+      });
   }
 
-  // --- Modal Methods ---
-
+  // =====================================================
+  // MODALS
+  // =====================================================
   viewDetails(event: Event): void {
     this.selectedEvent = event;
     this.showModal = true;
@@ -166,39 +232,48 @@ export class EventListComponent implements OnInit {
     this.selectedEvent = event;
     this.showSubmitModal = true;
     this.submissionForm = { proofType: 'url', proofData: '' };
+    this.selectedFile = null;
   }
 
   closeSubmitModal(): void {
     this.showSubmitModal = false;
     this.selectedEvent = null;
-    this.submissionForm = { proofType: 'url', proofData: '' };
   }
 
+  // =====================================================
+  // SUBMIT PROOF
+  // =====================================================
   submitProof(): void {
-    if (!this.selectedEvent || !this.submissionForm.proofData) {
-      return;
-    }
+    if (!this.selectedEvent || !this.canSubmit()) return;
 
     this.submitting = true;
 
-    const submissionData = {
-      eventId: this.selectedEvent._id,
-      proofType: this.submissionForm.proofType,
-      proofData: this.submissionForm.proofData
-    };
+    const formData = new FormData();
+    formData.append('eventId', this.selectedEvent._id);
+    formData.append('proofType', this.submissionForm.proofType);
 
-    this.apiService.submitProof(submissionData).subscribe({
-      next: (response) => {
-        if (response.success) {
-          alert('Proof submitted successfully! Please wait for admin approval.');
-          this.closeSubmitModal();
+    if (this.submissionForm.proofType === 'file' && this.selectedFile) {
+      formData.append('proofFile', this.selectedFile);
+    } else {
+      formData.append('proofData', this.submissionForm.proofData);
+    }
+
+    this.apiService.submitProofWithFile(formData)
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            alert('Proof submitted successfully!');
+            this.mySubmissions.set(this.selectedEvent!._id, 'pending');
+            this.closeSubmitModal();
+            this.applyFilters();
+          }
+          this.submitting = false;
+        },
+        error: () => {
+          alert('Failed to submit proof');
+          this.submitting = false;
         }
-        this.submitting = false;
-      },
-      error: (error) => {
-        alert(error.error?.message || 'Failed to submit proof');
-        this.submitting = false;
-      }
-    });
+      });
   }
 }

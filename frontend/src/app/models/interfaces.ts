@@ -4,6 +4,7 @@
  * CO1: Strong typing for Angular components
  */
 
+/* ===================== USER ===================== */
 export interface User {
   id: string;
   name: string;
@@ -13,6 +14,7 @@ export interface User {
   totalPoints: number;
 }
 
+/* ===================== NGO ===================== */
 export interface Ngo {
   _id: string;
   name: string;
@@ -24,6 +26,7 @@ export interface Ngo {
   aicteActivities: string[];
 }
 
+/* ===================== EVENT ===================== */
 export interface Event {
   _id: string;
   title: string;
@@ -40,11 +43,12 @@ export interface Event {
   createdBy: string;
 }
 
+/* ===================== SUBMISSION ===================== */
 export interface Submission {
   _id: string;
   student: User;
   event: Event;
-  proofType: 'url' | 'image';
+  proofType: 'url' | 'image' | 'file'; //  FIXED
   proofData: string;
   status: 'pending' | 'approved' | 'rejected';
   reviewedBy?: User;
@@ -53,9 +57,19 @@ export interface Submission {
   createdAt: Date;
 }
 
+/* ===================== ADMIN DASHBOARD ===================== */
+export interface DashboardStats {
+  totalStudents: number;
+  totalEvents: number;
+  pendingSubmissions: number;
+  approvedSubmissions: number;
+  totalPointsAwarded: number;
+}
+
+/* ===================== GENERIC API RESPONSE ===================== */
 export interface ApiResponse<T> {
   success: boolean;
+  data?: T;        //  optional (important)
   message?: string;
-  data?: T;
   count?: number;
 }

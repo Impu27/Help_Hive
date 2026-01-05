@@ -28,6 +28,8 @@ services:
       - FRONTEND_URL=http://localhost:4200
     ports:
       - "3000:3000"
+    volumes:
+      - ./backend/uploads:/app/uploads   # ✅ ADDED: persist uploaded proof files
     depends_on:
       - mongodb
     networks:

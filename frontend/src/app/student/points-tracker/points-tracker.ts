@@ -1,12 +1,7 @@
 // ===== src/app/student/points-tracker/points-tracker.component.ts =====
-/**
- * Points Tracker Component
- * CO1: Impact Journey progress visualization
- * CO4: Display submission history
- */
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { take } from 'rxjs/operators'; // ✅ Added import
 import { Submission } from '../../models/interfaces';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -21,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
 export class PointsTrackerComponent implements OnInit {
   submissions: Submission[] = [];
   loading = false;
+  error = ''; 
   totalPoints = 0;
 
   stats = {
@@ -40,24 +36,37 @@ export class PointsTrackerComponent implements OnInit {
     this.loadSubmissions();
   }
 
+  // --- Data Loading ---
   loadSubmissions(): void {
     this.loading = true;
+    this.error = ''; 
 
-    this.apiService.getMySubmissions().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.submissions = response.data;
-          this.calculateStats();
+    console.log('Loading submissions...'); 
+
+    this.apiService.getMySubmissions()
+      .pipe(take(1)) // ✅ Added pipe for memory safety
+      .subscribe({
+        next: (response) => {
+          console.log('Submissions response:', response); 
+          
+          if (response.success && response.data) {
+            this.submissions = response.data;
+            this.calculateStats();
+          } else {
+            console.warn('No submissions data in response');
+            this.submissions = [];
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading submissions:', error); 
+          this.error = 'Failed to load submissions. Please try again.';
+          this.loading = false;
         }
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading submissions:', error);
-        this.loading = false;
-      }
-    });
+      });
   }
 
+  // --- Statistics Logic ---
   calculateStats(): void {
     this.stats = {
       pending: 0,
@@ -74,10 +83,12 @@ export class PointsTrackerComponent implements OnInit {
       }
       if (submission.status === 'rejected') this.stats.rejected++;
     });
+
+    console.log('Calculated stats:', this.stats);
   }
 
+  // --- Helpers ---
   get progressPercentage(): number {
-    // Target: 100 AICTE points
     return Math.min((this.totalPoints / 100) * 100, 100);
   }
 

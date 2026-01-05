@@ -1,9 +1,4 @@
 // ===== src/app/app.routes.ts =====
-/**
- * App Routes Configuration
- * CO1: Role-based navigation with guards
- */
-
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
@@ -29,6 +24,7 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { role: 'student' },
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // ✅ Redirects /student to /student/dashboard
       { 
         path: 'dashboard', 
         loadComponent: () => import('./student/dashboard/dashboard').then(m => m.DashboardComponent) 
@@ -50,6 +46,7 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { role: 'admin' },
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // ✅ Redirects /admin to /admin/dashboard
       { 
         path: 'dashboard', 
         loadComponent: () => import('./admin/dashboard/dashboard.admin-dashboard').then(m => m.AdminDashboardComponent) 

@@ -1,5 +1,6 @@
 // ===== src/app/app.component.ts =====
 import { Component } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/navbar/navbar';
 
@@ -8,11 +9,23 @@ import { NavbarComponent } from './shared/navbar/navbar';
   standalone: true,
   imports: [RouterOutlet, NavbarComponent],
   template: `
-    <app-navbar></app-navbar>
+    @if (showNavbar) {
+      <app-navbar></app-navbar>
+    }
     <router-outlet></router-outlet>
   `,
-  styles: []
 })
 export class AppComponent {
-  title = 'Help-Hive';
+  showNavbar = false;
+
+  constructor(private router: Router) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.showNavbar = !(
+          event.url === '/login' ||
+          event.url === '/register'
+        );
+      }
+    });
+  }
 }

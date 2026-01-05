@@ -22,6 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/registrations', require('./routes/registrations'));
 
+app.use('/uploads', express.static('uploads'));
+
 // Request logging
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);

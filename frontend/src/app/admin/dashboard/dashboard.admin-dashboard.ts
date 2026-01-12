@@ -1,14 +1,14 @@
-// ===== src/app/admin/dashboard/admin-dashboard.component.ts =====
-/**
- * Admin Dashboard Component
- * CO1: Admin overview UI
- * CO4: Display admin statistics
- */
+// // ===== src/app/admin/dashboard/admin-dashboard.component.ts =====
+// /**
+//  * Admin Dashboard Component
+//  * CO1: Admin overview UI
+//  * CO4: Display admin statistics
+//  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { take } from 'rxjs/operators'; // ✅ Added import
+import { take } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -30,7 +30,10 @@ export class AdminDashboardComponent implements OnInit {
     totalPointsAwarded: 0
   };
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef // ✅ Needed for immediate template update
+  ) {}
 
   ngOnInit(): void {
     this.loadStats();
@@ -41,42 +44,34 @@ export class AdminDashboardComponent implements OnInit {
     this.loading = true;
 
     this.apiService.getDashboardStats()
-      .pipe(take(1)) // ✅ Added pipe for memory safety
+      .pipe(take(1)) // ✅ memory safety
       .subscribe({
         next: (response: any) => {
-          if (response.success) {
+          if (response.success && response.data) {
             this.stats = response.data;
           }
           this.loading = false;
+
+          // ✅ Force Angular to update the template immediately
+          this.cdr.detectChanges();
         },
         error: (error: any) => {
-          console.error('Error loading stats:', error);
-          this.loading = false; // ✅ Ensure loading state clears on error
+          console.error('Error loading admin stats:', error);
+          this.loading = false;
+          this.cdr.detectChanges(); // ✅ ensure loading spinner disappears
         }
       });
   }
 
   // --- Statistics Logic ---
   getApprovalRate(): number {
-    const total =
-      this.stats.approvedSubmissions + this.stats.pendingSubmissions;
-
-    if (total === 0) {
-      return 0;
-    }
-
-    return Math.round(
-      (this.stats.approvedSubmissions / total) * 100
-    );
+    const total = this.stats.approvedSubmissions + this.stats.pendingSubmissions;
+    return total === 0 ? 0 : Math.round((this.stats.approvedSubmissions / total) * 100);
   }
 
   getAvgPointsPerStudent(): number {
-    if (this.stats.totalStudents === 0) {
-      return 0;
-    }
-
-    return Math.round(
-      this.stats.totalPointsAwarded / this.stats.totalStudents
-    );
+    return this.stats.totalStudents === 0
+      ? 0
+      : Math.round(this.stats.totalPointsAwarded / this.stats.totalStudents);
   }
 }

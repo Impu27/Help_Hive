@@ -1,12 +1,12 @@
-// ===== src/app/admin/create-event/create-event.component.ts =====
-/**
- * Create Event Component
- * CO1: Event creation form
- * CO3: Select NGOs from database
- * CO4: Submit event to API
- */
+// // ===== src/app/admin/create-event/create-event.component.ts =====
+// /**
+//  * Create Event Component
+//  * CO1: Event creation form
+//  * CO3: Select NGOs from database
+//  * CO4: Submit event to API
+//  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -15,7 +15,7 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { ApiService } from '../../services/api.service';
@@ -48,7 +48,8 @@ export class CreateEventComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef // ✅ Force change detection
   ) {
     this.eventForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
@@ -64,7 +65,7 @@ export class CreateEventComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // 🔥 Reload NGOs when route is re-entered
+    // Reload NGOs on route re-entry
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
@@ -91,14 +92,14 @@ export class CreateEventComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          this.ngos = response.success && response.data
-            ? response.data
-            : [];
+          this.ngos = response.success && response.data ? response.data : [];
           this.loading = false;
+          this.cdr.detectChanges(); // ✅ Ensure template updates immediately
         },
         error: (error) => {
           console.error('Error loading NGOs:', error);
           this.loading = false;
+          this.cdr.detectChanges(); // ✅ Clear loading state on error
         }
       });
   }
@@ -124,10 +125,12 @@ export class CreateEventComponent implements OnInit, OnDestroy {
             this.router.navigate(['/admin/dashboard']);
           }
           this.submitting = false;
+          this.cdr.detectChanges(); // ✅ ensure submit button state updates
         },
         error: (error) => {
           this.errorMessage = error.error?.message || 'Failed to create event';
           this.submitting = false;
+          this.cdr.detectChanges(); // ✅ ensure error message renders
         }
       });
   }

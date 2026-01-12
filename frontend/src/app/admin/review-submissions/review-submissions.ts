@@ -1,12 +1,12 @@
-// ===== src/app/admin/review-submissions/review-submissions.component.ts =====
-/**
- * Review Submissions Component
- * CO1: Clear Approve/Reject UI
- * CO3: Automated point calculation on approval
- * CO4: Update submissions via API
- */
+// // ===== src/app/admin/review-submissions/review-submissions.component.ts =====
+// /**
+//  * Review Submissions Component
+//  * CO1: Clear Approve/Reject UI
+//  * CO3: Automated point calculation on approval
+//  * CO4: Update submissions via API
+//  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
@@ -37,11 +37,12 @@ export class ReviewSubmissionsComponent implements OnInit, OnDestroy {
 
   constructor(
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef // ✅ Force Angular change detection
   ) {}
 
   ngOnInit(): void {
-    // 🔥 Reload data whenever this route is navigated to
+    // Reload data whenever this route is navigated to
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
@@ -68,14 +69,14 @@ export class ReviewSubmissionsComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          this.submissions = response.success && response.data
-            ? response.data
-            : [];
+          this.submissions = response.success && response.data ? response.data : [];
           this.loading = false;
+          this.cdr.detectChanges(); // ✅ Update template immediately
         },
         error: (error) => {
           console.error('Error loading submissions:', error);
           this.loading = false;
+          this.cdr.detectChanges(); // ✅ Ensure spinner disappears on error
         }
       });
   }
@@ -111,13 +112,15 @@ export class ReviewSubmissionsComponent implements OnInit, OnDestroy {
           if (response.success) {
             alert(`Submission ${status}!`);
             this.closeReviewModal();
-            this.loadPendingSubmissions();
+            this.loadPendingSubmissions(); // ✅ Refresh data immediately
           }
           this.reviewing = false;
+          this.cdr.detectChanges(); // ✅ Update modal & buttons
         },
         error: (error) => {
           alert(error.error?.message || 'Failed to review submission');
           this.reviewing = false;
+          this.cdr.detectChanges(); // ✅ Ensure button state updates
         }
       });
   }

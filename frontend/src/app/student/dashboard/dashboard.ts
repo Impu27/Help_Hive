@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { take } from 'rxjs/operators'; // ✅ Added this import
+import { take } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { User, Event, Submission } from '../../models/interfaces';
@@ -30,7 +31,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef // ✅ Inject ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,51 +43,36 @@ export class DashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.loading = true;
 
-    // Get upcoming events
-    this.apiService.getEvents({ status: 'upcoming' })
-      .pipe(take(1)) // ✅ Auto-unsubscribe after first result
-      .subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.upcomingEvents = response.data.slice(0, 3);
-          }
-        },
-        error: (error) => console.error('Error loading events:', error)
-      });
+    forkJoin({
+      upcoming: this.apiService.getEvents({ status: 'upcoming' }).pipe(take(1)),
+      registrations: this.apiService.getMyRegistrations().pipe(take(1)),
+      submissions: this.apiService.getMySubmissions().pipe(take(1))
+    }).subscribe({
+      next: ({ upcoming, registrations, submissions }) => {
+        // Upcoming events
+        this.upcomingEvents = upcoming.success && upcoming.data ? upcoming.data.slice(0, 3) : [];
 
-    // Get my registered events
-    this.apiService.getMyRegistrations()
-      .pipe(take(1)) // ✅ Auto-unsubscribe
-      .subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.registeredEvents = response.data;
-            this.stats.registeredEvents = response.data.length;
-          }
-        },
-        error: (error) => console.error('Error loading registrations:', error)
-      });
+        // My registrations
+        this.registeredEvents = registrations.success && registrations.data ? registrations.data : [];
+        this.stats.registeredEvents = this.registeredEvents.length;
 
-    // Get student submissions
-    this.apiService.getMySubmissions()
-      .pipe(take(1)) // ✅ Auto-unsubscribe
-      .subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.recentSubmissions = response.data.slice(0, 5);
-            
-            this.stats.totalPoints = this.currentUser?.totalPoints || 0;
-            this.stats.pendingSubmissions = response.data.filter(s => s.status === 'pending').length;
-            this.stats.approvedSubmissions = response.data.filter(s => s.status === 'approved').length;
-            this.stats.eventsParticipated = response.data.length;
-          }
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error loading submissions:', error);
-          this.loading = false; // ✅ Ensure loading state clears on error
-        }
-      });
+        // Submissions
+        this.recentSubmissions = submissions.success && submissions.data ? submissions.data.slice(0, 5) : [];
+        this.stats.totalPoints = this.currentUser?.totalPoints || 0;
+        this.stats.pendingSubmissions = this.recentSubmissions.filter(s => s.status === 'pending').length;
+        this.stats.approvedSubmissions = this.recentSubmissions.filter(s => s.status === 'approved').length;
+        this.stats.eventsParticipated = this.recentSubmissions.length;
+
+        // ✅ Force Angular to detect changes immediately
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading dashboard:', err);
+        this.loading = false;
+        this.cdr.detectChanges(); // ensure loading spinner disappears
+      }
+    });
   }
 
   get progressPercentage(): number {

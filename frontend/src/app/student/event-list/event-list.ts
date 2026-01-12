@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs/operators';
@@ -24,6 +24,7 @@ export class EventListComponent implements OnInit {
   myRegistrations = new Set<string>();
   mySubmissions = new Map<string, SubmissionStatus>();
   registering = new Set<string>();
+  submitting = false;
 
   // ================= FILTERS =================
   selectedStatus = 'all';
@@ -41,7 +42,6 @@ export class EventListComponent implements OnInit {
   selectedEvent: Event | null = null;
   showModal = false;
   showSubmitModal = false;
-  submitting = false;
 
   // ================= FILE UPLOAD =================
   selectedFile: File | null = null;
@@ -50,11 +50,11 @@ export class EventListComponent implements OnInit {
     proofData: ''
   };
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef // ✅ force immediate template update
+  ) {}
 
-  // =====================================================
-  // LIFECYCLE
-  // =====================================================
   ngOnInit(): void {
     this.loadEvents();
     this.loadMyRegistrations();
@@ -70,15 +70,15 @@ export class EventListComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          if (response.success && response.data) {
-            this.events = response.data;
-            this.applyFilters();
-          }
+          this.events = response.success && response.data ? response.data : [];
+          this.applyFilters();
           this.loading = false;
+          this.cdr.detectChanges(); // ✅ immediately update template
         },
         error: () => {
           this.error = 'Failed to load events.';
           this.loading = false;
+          this.cdr.detectChanges(); // ✅ ensure spinner disappears
         }
       });
   }
@@ -92,6 +92,7 @@ export class EventListComponent implements OnInit {
             this.myRegistrations = new Set(
               response.data.map((r: any) => r.event._id)
             );
+            this.cdr.detectChanges(); // ✅ update registration badges
           }
         }
       });
@@ -108,6 +109,7 @@ export class EventListComponent implements OnInit {
               const eventId = sub.event?._id || sub.event;
               this.mySubmissions.set(eventId, sub.status);
             });
+            this.cdr.detectChanges(); // ✅ update submission badges
           }
         },
         error: (err) => console.error('Error loading submissions', err)
@@ -123,8 +125,7 @@ export class EventListComponent implements OnInit {
         this.selectedStatus === 'all' || event.status === this.selectedStatus;
 
       const activityMatch =
-        this.selectedActivity === 'all' ||
-        event.activityType === this.selectedActivity;
+        this.selectedActivity === 'all' || event.activityType === this.selectedActivity;
 
       const searchMatch =
         !this.searchQuery ||
@@ -133,6 +134,7 @@ export class EventListComponent implements OnInit {
 
       return statusMatch && activityMatch && searchMatch;
     });
+    this.cdr.detectChanges(); // ✅ ensure filtered list renders immediately
   }
 
   isRegistered(eventId: string): boolean {
@@ -165,7 +167,7 @@ export class EventListComponent implements OnInit {
   }
 
   // =====================================================
-  // ACTIONS (🔥 FIXED)
+  // ACTIONS
   // =====================================================
   registerForEvent(eventId: string): void {
     if (this.registering.has(eventId)) return;
@@ -177,20 +179,19 @@ export class EventListComponent implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success) {
-            // ✅ optimistic UI update
             this.myRegistrations.add(eventId);
 
             const event = this.events.find(e => e._id === eventId);
-            if (event) {
-              event.currentParticipants += 1;
-            }
+            if (event) event.currentParticipants += 1;
 
             this.applyFilters();
           }
           this.registering.delete(eventId);
+          this.cdr.detectChanges(); // ✅ update buttons & badges
         },
         error: () => {
           this.registering.delete(eventId);
+          this.cdr.detectChanges(); // ✅ revert button state
           alert('Registration failed');
         }
       });
@@ -206,11 +207,10 @@ export class EventListComponent implements OnInit {
           this.myRegistrations.delete(eventId);
 
           const event = this.events.find(e => e._id === eventId);
-          if (event && event.currentParticipants > 0) {
-            event.currentParticipants -= 1;
-          }
+          if (event && event.currentParticipants > 0) event.currentParticipants -= 1;
 
           this.applyFilters();
+          this.cdr.detectChanges(); // ✅ update template immediately
         }
       });
   }
@@ -221,11 +221,13 @@ export class EventListComponent implements OnInit {
   viewDetails(event: Event): void {
     this.selectedEvent = event;
     this.showModal = true;
+    this.cdr.detectChanges(); // ✅ render modal immediately
   }
 
   closeModal(): void {
     this.showModal = false;
     this.selectedEvent = null;
+    this.cdr.detectChanges(); // ✅ update template
   }
 
   openSubmitModal(event: Event): void {
@@ -233,11 +235,13 @@ export class EventListComponent implements OnInit {
     this.showSubmitModal = true;
     this.submissionForm = { proofType: 'url', proofData: '' };
     this.selectedFile = null;
+    this.cdr.detectChanges(); // ✅ render submit modal
   }
 
   closeSubmitModal(): void {
     this.showSubmitModal = false;
     this.selectedEvent = null;
+    this.cdr.detectChanges();
   }
 
   // =====================================================
@@ -247,6 +251,7 @@ export class EventListComponent implements OnInit {
     if (!this.selectedEvent || !this.canSubmit()) return;
 
     this.submitting = true;
+    this.cdr.detectChanges(); // ✅ disable buttons immediately
 
     const formData = new FormData();
     formData.append('eventId', this.selectedEvent._id);
@@ -269,10 +274,12 @@ export class EventListComponent implements OnInit {
             this.applyFilters();
           }
           this.submitting = false;
+          this.cdr.detectChanges(); // ✅ update UI immediately
         },
         error: () => {
           alert('Failed to submit proof');
           this.submitting = false;
+          this.cdr.detectChanges(); // ✅ update UI immediately
         }
       });
   }

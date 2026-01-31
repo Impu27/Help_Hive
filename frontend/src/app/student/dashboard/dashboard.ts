@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit {
 
   stats = {
     totalPoints: 0,
+    totalHours: 0,  // ✅ New: Total volunteering hours
     pendingSubmissions: 0,
     approvedSubmissions: 0,
     eventsParticipated: 0,
@@ -59,6 +60,10 @@ export class DashboardComponent implements OnInit {
         // Submissions
         this.recentSubmissions = submissions.success && submissions.data ? submissions.data.slice(0, 5) : [];
         this.stats.totalPoints = this.currentUser?.totalPoints || 0;
+        // ✅ Calculate total hours from approved submissions
+        this.stats.totalHours = this.recentSubmissions
+          .filter(s => s.status === 'approved')
+          .reduce((total, sub) => total + (sub.event.hoursEquivalent || 0), 0);
         this.stats.pendingSubmissions = this.recentSubmissions.filter(s => s.status === 'pending').length;
         this.stats.approvedSubmissions = this.recentSubmissions.filter(s => s.status === 'approved').length;
         this.stats.eventsParticipated = this.recentSubmissions.length;

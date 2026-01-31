@@ -13,6 +13,7 @@ export interface User {
   role: 'student' | 'admin';
   studentId?: string;
   totalPoints: number;
+  totalHours?: number;  // ✅ Calculated as totalPoints * 4
 }
 
 /* ===================== NGO ===================== */
@@ -35,6 +36,7 @@ export interface Event {
   ngo: Ngo;
   activityType: string;
   pointsAwarded: number;
+  hoursEquivalent: number;  // ✅ Calculated as pointsAwarded * 4
   eventDate: Date;
   eventEndDate?: Date;
   location?: string;
@@ -67,6 +69,20 @@ export interface Submission {
   reviewedBy?: User;
   reviewDate?: Date;
   reviewNotes?: string;
+  createdAt: Date;
+}
+
+/* ===================== POINTS LEDGER ===================== */
+export interface PointsLedgerEntry {
+  _id: string;
+  student: User | string;
+  event: Event | string;
+  submission?: string;
+  pointsEarned: number;
+  hoursEarned: number;  // ✅ Calculated as pointsEarned * 4
+  transactionType: 'credit' | 'debit' | 'adjustment';
+  notes?: string;
+  processedBy?: string;
   createdAt: Date;
 }
 

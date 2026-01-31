@@ -59,6 +59,7 @@
         <div>Semester</div>
         <div>Date</div>
         <div>Points</div>
+        <div>Hours</div>
         <div>Status</div>
       </div>
       <div class="table-row" *ngFor="let sub of submissions">
@@ -69,6 +70,7 @@
         <div class="semester-badge">Sem {{ sub.semester }}</div>
         <div>{{ sub.createdAt | date:'MMM dd, yyyy' }}</div>
         <div>{{ sub.event.pointsAwarded }} pts</div>
+        <div class="hours-badge">{{ sub.event.hoursEquivalent }} hrs</div>
         <div>
           <span class="status-badge" [ngClass]="getStatusClass(sub.status)">
             {{ sub.status | uppercase }}

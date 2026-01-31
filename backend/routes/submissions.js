@@ -98,7 +98,8 @@ router.post('/', authMiddleware, studentOnly, upload.single('proofFile'), async 
 
     console.log('Submission created:', submission._id);
 
-    await submission.populate('event', 'title pointsAwarded');
+    // ✅ Populate event with points AND hours for display
+    await submission.populate('event', 'title pointsAwarded hoursEquivalent');
 
     res.status(201).json({
       success: true,
@@ -124,7 +125,7 @@ router.post('/', authMiddleware, studentOnly, upload.single('proofFile'), async 
 router.get('/my-submissions', authMiddleware, studentOnly, async (req, res) => {
   try {
     const submissions = await Submission.find({ student: req.user.id })
-      .populate('event', 'title pointsAwarded eventDate activityType')
+      .populate('event', 'title pointsAwarded hoursEquivalent eventDate activityType')
       .populate('reviewedBy', 'name')
       .sort({ createdAt: -1 });
 

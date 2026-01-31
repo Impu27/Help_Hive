@@ -128,7 +128,10 @@ router.post('/', authMiddleware, adminOnly, async (req, res) => {
       title, description, ngo, activityType, pointsAwarded,
       eventDate, eventEndDate, location, maxParticipants,
       createdBy: req.user.id
+      // ✅ hoursEquivalent is auto-calculated by pre-save hook (pointsAwarded * HOURS_PER_POINT)
     });
+
+    console.log(`Event created: "${event.title}" | Points: ${event.pointsAwarded} | Hours: ${event.hoursEquivalent}`);
 
     await event.populate('ngo', 'name causes');
 

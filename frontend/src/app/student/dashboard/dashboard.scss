@@ -60,6 +60,7 @@
   }
 
   &.primary { border-left: 4px solid #f4b400; h3 { color: #f4b400; } }
+  &.secondary { border-left: 4px solid #1976d2; h3 { color: #1976d2; } }
   &.success { border-left: 4px solid #34a853; h3 { color: #34a853; } }
   &.warning { border-left: 4px solid #ff9800; h3 { color: #ff9800; } }
   &.info { border-left: 4px solid #2196f3; h3 { color: #2196f3; } }

@@ -23,7 +23,7 @@ router.get('/submissions/pending', authMiddleware, adminOnly, async (req, res) =
   try {
     const submissions = await Submission.find({ status: 'pending' })
       .populate('student', 'name email studentId')
-      .populate('event', 'title pointsAwarded activityType')
+      .populate('event', 'title pointsAwarded hoursEquivalent activityType')
       .sort({ createdAt: 1 }); // Oldest first
 
     res.json({
@@ -89,8 +89,8 @@ router.patch('/submissions/:id/review', authMiddleware, adminOnly, async (req, r
     if (status === 'approved') {
       const pointsEarned = submission.event.pointsAwarded;
 
-      // Create points ledger entry
-      await PointsLedger.create({
+      // ✅ Create points ledger entry with hours (hoursEarned auto-calculated by pre-save hook)
+      const ledgerEntry = await PointsLedger.create({
         student: submission.student._id,
         event: submission.event._id,
         submission: submission._id,
@@ -99,6 +99,8 @@ router.patch('/submissions/:id/review', authMiddleware, adminOnly, async (req, r
         notes: `Approved submission for event: ${submission.event.title}`,
         processedBy: req.user.id
       });
+
+      console.log(`Points awarded - Student: ${submission.student._id} | Points: ${pointsEarned} | Hours: ${ledgerEntry.hoursEarned}`);
 
       // Update student's total points
       await User.findByIdAndUpdate(

@@ -51,9 +51,14 @@
           <span class="proof-type">{{ submission.proofType | uppercase }}</span>
         </div>
         <div class="proof-data">
-          <a [href]="submission.proofData" target="_blank" class="proof-link">
-            {{ submission.proofData }}
-          </a>
+          <div *ngIf="submission.proofType === 'url'">
+            <a [href]="submission.proofData" target="_blank" class="proof-link">
+              {{ submission.proofData }}
+            </a>
+          </div>
+          <div *ngIf="submission.proofType === 'image'">
+            <p class="file-info">📁 {{ submission.proofData.split('/').pop() }}</p>
+          </div>
           <button 
             class="btn-view-proof" 
             (click)="viewProof(submission.proofData, submission.proofType)">

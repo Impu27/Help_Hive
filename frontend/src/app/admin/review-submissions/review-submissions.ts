@@ -15,6 +15,7 @@ import { Subject } from 'rxjs';
 
 import { Submission } from '../../models/interfaces';
 import { ApiService } from '../../services/api.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-review-submissions',
@@ -127,6 +128,17 @@ export class ReviewSubmissionsComponent implements OnInit, OnDestroy {
 
   // --- Helpers ---
   viewProof(proofData: string, proofType: string): void {
-    window.open(proofData, '_blank');
+    console.log('Viewing proof:', { proofData, proofType });
+    
+    // If it's a file path (starts with /), construct full URL using serverUrl
+    if (proofData.startsWith('/')) {
+      const fullUrl = `${environment.serverUrl}${proofData}`;
+      console.log('Opening file from:', fullUrl);
+      window.open(fullUrl, '_blank');
+    } else {
+      // If it's a URL, open directly
+      console.log('Opening URL directly');
+      window.open(proofData, '_blank');
+    }
   }
 }

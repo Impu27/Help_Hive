@@ -16,6 +16,12 @@ const submissionSchema = new mongoose.Schema({
     ref: 'Event',
     required: [true, 'Event reference is required']
   },
+  semester: {
+    type: Number,
+    required: [true, 'Semester is required'],
+    min: [1, 'Semester must be between 1 and 8'],
+    max: [8, 'Semester must be between 1 and 8']
+  },
   proofType: {
     type: String,
     enum: ['url', 'image'],

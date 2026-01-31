@@ -60,6 +60,7 @@ export interface Submission {
   _id: string;
   student: User;
   event: Event;
+  semester: number;
   proofType: 'url' | 'image' | 'file'; //  FIXED
   proofData: string;
   status: 'pending' | 'approved' | 'rejected';

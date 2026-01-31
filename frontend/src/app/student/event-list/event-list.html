@@ -162,18 +162,25 @@
 
     <div class="form-group">
       <label>Proof Type</label>
-      <select [(ngModel)]="submissionForm.proofType">
+      <select [(ngModel)]="submissionForm.proofType" (change)="cdr.detectChanges()">
         <option value="url">URL</option>
         <option value="file">File</option>
       </select>
     </div>
 
     <div *ngIf="submissionForm.proofType === 'url'" class="form-group">
-      <input [(ngModel)]="submissionForm.proofData" placeholder="Proof URL" />
+      <label>Proof URL</label>
+      <input 
+        type="url" 
+        [(ngModel)]="submissionForm.proofData" 
+        placeholder="https://example.com/proof.jpg" 
+      />
     </div>
 
     <div *ngIf="submissionForm.proofType === 'file'" class="form-group">
+      <label>Upload File</label>
       <input type="file" (change)="onFileSelected($event)" />
+      <small *ngIf="selectedFile" class="help-text">{{ selectedFile.name }}</small>
     </div>
 
     <div class="modal-actions">

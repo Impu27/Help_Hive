@@ -56,6 +56,7 @@
     <div class="submissions-table" *ngIf="!loading && submissions.length > 0">
       <div class="table-row header">
         <div>Event</div>
+        <div>Semester</div>
         <div>Date</div>
         <div>Points</div>
         <div>Status</div>
@@ -65,6 +66,7 @@
           <strong>{{ sub.event.title }}</strong>
           <p>{{ sub.event.activityType }}</p>
         </div>
+        <div class="semester-badge">Sem {{ sub.semester }}</div>
         <div>{{ sub.createdAt | date:'MMM dd, yyyy' }}</div>
         <div>{{ sub.event.pointsAwarded }} pts</div>
         <div>

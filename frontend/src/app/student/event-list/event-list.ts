@@ -60,7 +60,7 @@ export class EventListComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private cdr: ChangeDetectorRef // ✅ force immediate template update
+    public cdr: ChangeDetectorRef // ✅ make public for template access
   ) {}
 
   ngOnInit(): void {
@@ -317,10 +317,18 @@ export class EventListComponent implements OnInit {
       formData.append('proofData', this.submissionForm.proofData);
     }
 
+    console.log('Submitting proof with FormData:', {
+      eventId: this.selectedEvent._id,
+      proofType: this.submissionForm.proofType,
+      hasFile: !!this.selectedFile,
+      hasProofData: !!this.submissionForm.proofData
+    });
+
     this.apiService.submitProofWithFile(formData)
       .pipe(take(1))
       .subscribe({
         next: (response) => {
+          console.log('Submission response:', response);
           if (response.success) {
             alert('Proof submitted successfully!');
             this.mySubmissions.set(this.selectedEvent!._id, 'pending');
@@ -330,8 +338,10 @@ export class EventListComponent implements OnInit {
           this.submitting = false;
           this.cdr.detectChanges(); // ✅ update UI immediately
         },
-        error: () => {
-          alert('Failed to submit proof');
+        error: (err) => {
+          console.error('Submission error:', err);
+          const errorMsg = err.error?.message || err.message || 'Failed to submit proof';
+          alert(`Failed to submit proof: ${errorMsg}`);
           this.submitting = false;
           this.cdr.detectChanges(); // ✅ update UI immediately
         }

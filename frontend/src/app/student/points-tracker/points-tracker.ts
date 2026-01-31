@@ -33,7 +33,6 @@ export class PointsTrackerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.totalPoints = this.authService.currentUserValue?.totalPoints || 0;
     this.loadSubmissions();
   }
 
@@ -58,6 +57,7 @@ export class PointsTrackerComponent implements OnInit {
             console.warn('No submissions data in response');
             this.submissions = [];
             this.stats = { pending: 0, approved: 0, rejected: 0, totalEarned: 0 };
+            this.totalPoints = 0;
           }
 
           this.loading = false;
@@ -76,6 +76,7 @@ export class PointsTrackerComponent implements OnInit {
   calculateStats(): void {
     this.stats = { pending: 0, approved: 0, rejected: 0, totalEarned: 0 };
 
+    // ✅ Calculate totalPoints from approved submissions (not stored field)
     this.submissions.forEach(submission => {
       if (submission.status === 'pending') this.stats.pending++;
       if (submission.status === 'approved') {
@@ -84,6 +85,9 @@ export class PointsTrackerComponent implements OnInit {
       }
       if (submission.status === 'rejected') this.stats.rejected++;
     });
+
+    // ✅ Update totalPoints to match calculated earnings
+    this.totalPoints = this.stats.totalEarned;
 
     console.log('Calculated stats:', this.stats);
     this.cdr.detectChanges(); // ✅ force stats update in template

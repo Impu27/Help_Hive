@@ -59,13 +59,14 @@ export class DashboardComponent implements OnInit {
 
         // Submissions
         this.recentSubmissions = submissions.success && submissions.data ? submissions.data.slice(0, 5) : [];
-        this.stats.totalPoints = this.currentUser?.totalPoints || 0;
-        // ✅ Calculate total hours from approved submissions
-        this.stats.totalHours = this.recentSubmissions
-          .filter(s => s.status === 'approved')
-          .reduce((total, sub) => total + (sub.event.hoursEquivalent || 0), 0);
+        
+        // ✅ Calculate points and hours from approved submissions (not stored field)
+        const approvedSubmissions = this.recentSubmissions.filter(s => s.status === 'approved');
+        this.stats.totalPoints = approvedSubmissions.reduce((total, sub) => total + (sub.event.pointsAwarded || 0), 0);
+        this.stats.totalHours = approvedSubmissions.reduce((total, sub) => total + (sub.event.hoursEquivalent || 0), 0);
+        
         this.stats.pendingSubmissions = this.recentSubmissions.filter(s => s.status === 'pending').length;
-        this.stats.approvedSubmissions = this.recentSubmissions.filter(s => s.status === 'approved').length;
+        this.stats.approvedSubmissions = approvedSubmissions.length;
         this.stats.eventsParticipated = this.recentSubmissions.length;
 
         // ✅ Force Angular to detect changes immediately

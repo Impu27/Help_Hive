@@ -44,6 +44,17 @@ export interface Event {
   createdBy: string;
 }
 
+/* ===================== REGISTRATION ===================== */
+export interface Registration {
+  _id: string;
+  student: User | string;
+  event: Event | string;
+  semester: number;
+  usn: string;
+  status: 'registered' | 'attended' | 'cancelled';
+  registrationDate: Date;
+}
+
 /* ===================== SUBMISSION ===================== */
 export interface Submission {
   _id: string;

@@ -11,6 +11,18 @@ const registrationSchema = new mongoose.Schema({
     ref: 'Event',
     required: true
   },
+  semester: {
+    type: Number,
+    required: [true, 'Semester is required'],
+    min: [1, 'Semester must be between 1 and 8'],
+    max: [8, 'Semester must be between 1 and 8']
+  },
+  usn: {
+    type: String,
+    required: [true, 'USN is required'],
+    trim: true,
+    match: [/^[A-Z0-9]+$/, 'USN must contain only uppercase letters and numbers']
+  },
   status: {
     type: String,
     enum: ['registered', 'attended', 'cancelled'],

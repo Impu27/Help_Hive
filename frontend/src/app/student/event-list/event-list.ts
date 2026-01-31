@@ -42,6 +42,14 @@ export class EventListComponent implements OnInit {
   selectedEvent: Event | null = null;
   showModal = false;
   showSubmitModal = false;
+  showRegistrationModal = false;
+
+  // ================= REGISTRATION FORM =================
+  registrationForm = {
+    semester: '',
+    usn: ''
+  };
+  registrationError = '';
 
   // ================= FILE UPLOAD =================
   selectedFile: File | null = null;
@@ -170,31 +178,77 @@ export class EventListComponent implements OnInit {
   // ACTIONS
   // =====================================================
   registerForEvent(eventId: string): void {
-    if (this.registering.has(eventId)) return;
+    this.selectedEvent = this.events.find(e => e._id === eventId) || null;
+    this.showRegistrationModal = true;
+    this.registrationForm = { semester: '', usn: '' };
+    this.registrationError = '';
+    this.cdr.detectChanges();
+  }
 
-    this.registering.add(eventId);
+  closeRegistrationModal(): void {
+    this.showRegistrationModal = false;
+    this.selectedEvent = null;
+    this.registrationForm = { semester: '', usn: '' };
+    this.registrationError = '';
+    this.cdr.detectChanges();
+  }
 
-    this.apiService.registerForEvent(eventId)
+  submitRegistration(): void {
+    if (!this.selectedEvent || !this.validateRegistrationForm()) {
+      return;
+    }
+
+    if (this.registering.has(this.selectedEvent._id)) return;
+
+    this.registering.add(this.selectedEvent._id);
+    this.registrationError = '';
+
+    this.apiService.registerForEvent(
+      this.selectedEvent._id,
+      parseInt(this.registrationForm.semester),
+      this.registrationForm.usn.toUpperCase()
+    )
       .pipe(take(1))
       .subscribe({
         next: (res) => {
           if (res.success) {
-            this.myRegistrations.add(eventId);
+            this.myRegistrations.add(this.selectedEvent!._id);
 
-            const event = this.events.find(e => e._id === eventId);
+            const event = this.events.find(e => e._id === this.selectedEvent!._id);
             if (event) event.currentParticipants += 1;
 
             this.applyFilters();
+            this.closeRegistrationModal();
           }
-          this.registering.delete(eventId);
-          this.cdr.detectChanges(); // ✅ update buttons & badges
+          this.registering.delete(this.selectedEvent!._id);
+          this.cdr.detectChanges();
         },
-        error: () => {
-          this.registering.delete(eventId);
-          this.cdr.detectChanges(); // ✅ revert button state
-          alert('Registration failed');
+        error: (err) => {
+          this.registrationError = err.error?.message || 'Registration failed';
+          this.registering.delete(this.selectedEvent!._id);
+          this.cdr.detectChanges();
         }
       });
+  }
+
+  validateRegistrationForm(): boolean {
+    if (!this.registrationForm.semester || !this.registrationForm.usn) {
+      this.registrationError = 'Semester and USN are required';
+      return false;
+    }
+
+    const semester = parseInt(this.registrationForm.semester);
+    if (isNaN(semester) || semester < 1 || semester > 8) {
+      this.registrationError = 'Semester must be between 1 and 8';
+      return false;
+    }
+
+    if (!/^[A-Z0-9]+$/.test(this.registrationForm.usn.toUpperCase())) {
+      this.registrationError = 'USN must contain only letters and numbers';
+      return false;
+    }
+
+    return true;
   }
 
   cancelRegistration(eventId: string): void {

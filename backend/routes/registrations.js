@@ -14,12 +14,36 @@ const { authMiddleware, studentOnly } = require('../middleware/auth');
  */
 router.post('/register', authMiddleware, studentOnly, async (req, res) => {
   try {
-    const { eventId } = req.body;
+    const { eventId, semester, usn } = req.body;
 
+    // Validation
     if (!eventId) {
       return res.status(400).json({
         success: false,
         message: 'Event ID is required'
+      });
+    }
+
+    if (!semester || !usn) {
+      return res.status(400).json({
+        success: false,
+        message: 'Semester and USN are required'
+      });
+    }
+
+    // Validate semester range
+    if (semester < 1 || semester > 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Semester must be between 1 and 8'
+      });
+    }
+
+    // Validate USN format
+    if (!/^[A-Z0-9]+$/.test(usn)) {
+      return res.status(400).json({
+        success: false,
+        message: 'USN must contain only uppercase letters and numbers'
       });
     }
 
@@ -57,6 +81,8 @@ router.post('/register', authMiddleware, studentOnly, async (req, res) => {
     const registration = await Registration.create({
       student: req.user.id,
       event: eventId,
+      semester,
+      usn,
       status: 'registered'
     });
 

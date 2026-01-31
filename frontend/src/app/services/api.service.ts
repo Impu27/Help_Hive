@@ -77,10 +77,10 @@ export class ApiService {
   }
 
   // ================= EVENT REGISTRATIONS =================
-  registerForEvent(eventId: string): Observable<any> {
+  registerForEvent(eventId: string, semester: number, usn: string): Observable<any> {
     return this.http.post(
       `${this.apiUrl}/registrations/register`,
-      { eventId },
+      { eventId, semester, usn },
       { headers: this.getHeaders() }
     );
   }

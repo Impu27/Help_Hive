@@ -186,3 +186,55 @@
     </div>
   </div>
 </div>
+<!-- ================= REGISTRATION MODAL ================= -->
+<div class="modal-overlay" *ngIf="showRegistrationModal" (click)="closeRegistrationModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeRegistrationModal()">×</button>
+
+    <h2>Register for Event</h2>
+    <p *ngIf="selectedEvent" class="event-name">{{ selectedEvent.title }}</p>
+
+    <div *ngIf="registrationError" class="error-message">
+      {{ registrationError }}
+    </div>
+
+    <div class="form-group">
+      <label for="semester">Semester *</label>
+      <select 
+        id="semester"
+        [(ngModel)]="registrationForm.semester"
+        class="form-control">
+        <option value="">Select Semester</option>
+        <option value="1">Semester 1</option>
+        <option value="2">Semester 2</option>
+        <option value="3">Semester 3</option>
+        <option value="4">Semester 4</option>
+        <option value="5">Semester 5</option>
+        <option value="6">Semester 6</option>
+        <option value="7">Semester 7</option>
+        <option value="8">Semester 8</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="usn">USN (University Serial Number) *</label>
+      <input
+        id="usn"
+        type="text"
+        [(ngModel)]="registrationForm.usn"
+        placeholder="e.g., 1BM20CS001"
+        class="form-control"
+      />
+      <small class="help-text">Uppercase letters and numbers only</small>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeRegistrationModal()">Cancel</button>
+      <button class="btn-primary"
+              (click)="submitRegistration()"
+              [disabled]="registering.has(selectedEvent?._id || '')">
+        {{ registering.has(selectedEvent?._id || '') ? 'Registering...' : 'Register' }}
+      </button>
+    </div>
+  </div>
+</div>

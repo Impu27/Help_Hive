@@ -34,6 +34,21 @@
       </div>
 
       <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phone"
+          placeholder="Enter 10-digit phone number (e.g., 9876543210)"
+          [class.error]="phone?.invalid && phone?.touched">
+        <div class="error-message" *ngIf="phone?.invalid && phone?.touched">
+          <span *ngIf="phone?.errors?.['required']">Phone number is required</span>
+          <span *ngIf="phone?.errors?.['pattern']">Enter a valid 10-digit phone number</span>
+        </div>
+      </div>
+
+
+      <div class="form-group">
         <label for="studentId">Student ID</label>
         <input 
           type="text" 

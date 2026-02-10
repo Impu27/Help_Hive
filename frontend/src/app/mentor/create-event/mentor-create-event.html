@@ -1,0 +1,172 @@
+<!-- Mentor Create Event Template -->
+<div class="mentor-create-event">
+  <div class="page-header">
+    <a href="/mentor/dashboard" class="btn-back">← Back to Dashboard</a>
+    <h1>Create Event for Your Mentees</h1>
+  </div>
+
+  <!-- Error Messages -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button (click)="error = null" class="close-btn">×</button>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <!-- Form -->
+  <form (ngSubmit)="createEvent()" class="create-event-form">
+    
+    <!-- Event Title -->
+    <div class="form-group">
+      <label for="title">Event Title *</label>
+      <input
+        type="text"
+        id="title"
+        [(ngModel)]="formData.title"
+        name="title"
+        placeholder="Enter event title"
+        required
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="description">Description *</label>
+      <textarea
+        id="description"
+        [(ngModel)]="formData.description"
+        name="description"
+        placeholder="Describe the event"
+        rows="4"
+        required
+      ></textarea>
+    </div>
+
+    <!-- NGO Selection -->
+    <div class="form-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label for="ngo">Select NGO *</label>
+        <button 
+          type="button" 
+          (click)="loadNgos()" 
+          class="btn-refresh"
+          [disabled]="isLoadingNgos"
+          title="Refresh NGO list"
+        >
+          {{ isLoadingNgos ? '⏳ Loading...' : '🔄 Refresh' }}
+        </button>
+      </div>
+      <select
+        id="ngo"
+        [(ngModel)]="formData.ngoId"
+        name="ngoId"
+        required
+        [disabled]="isLoadingNgos"
+      >
+        <option value="">
+          {{ isLoadingNgos ? '⏳ Loading NGOs...' : (ngos.length === 0 ? '❌ No NGOs found' : '-- Select NGO --') }}
+        </option>
+        <option *ngFor="let ngo of ngos" [value]="ngo._id">{{ ngo.name }}</option>
+      </select>
+      <small *ngIf="ngos.length > 0" style="color: #666; display: block; margin-top: 4px;">
+        ✅ {{ ngos.length }} NGO(s) loaded
+      </small>
+      <small *ngIf="isLoadingNgos" style="color: #0066cc; display: block; margin-top: 4px;">
+        ⏳ Loading NGOs... Check browser console for details
+      </small>
+    </div>
+
+    <!-- Activity Type -->
+    <div class="form-group">
+      <label for="activityType">Activity Type *</label>
+      <select
+        id="activityType"
+        [(ngModel)]="formData.activityType"
+        name="activityType"
+        required
+      >
+        <option value="">-- Select Activity Type --</option>
+        <option *ngFor="let type of activityTypes" [value]="type">{{ type }}</option>
+      </select>
+    </div>
+
+    <!-- Points and Participants Row -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="points">AICTE Points Awarded *</label>
+        <input
+          type="number"
+          id="points"
+          [(ngModel)]="formData.pointsAwarded"
+          name="pointsAwarded"
+          min="1"
+          max="100"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="maxParticipants">Max Participants</label>
+        <input
+          type="number"
+          id="maxParticipants"
+          [(ngModel)]="formData.maxParticipants"
+          name="maxParticipants"
+          min="1"
+        />
+      </div>
+    </div>
+
+    <!-- Dates Row -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="eventDate">Event Date *</label>
+        <input
+          type="datetime-local"
+          id="eventDate"
+          [(ngModel)]="formData.eventDate"
+          name="eventDate"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="eventEndDate">End Date (Optional)</label>
+        <input
+          type="datetime-local"
+          id="eventEndDate"
+          [(ngModel)]="formData.eventEndDate"
+          name="eventEndDate"
+        />
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="form-group">
+      <label for="location">Location</label>
+      <input
+        type="text"
+        id="location"
+        [(ngModel)]="formData.location"
+        name="location"
+        placeholder="Enter event location"
+      />
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <p><strong>Note:</strong> This event will be visible only to your assigned mentees. They will be able to register, participate, and submit proof of completion.</p>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        {{ isLoading ? 'Creating...' : 'Create Event' }}
+      </button>
+      <a href="/mentor/dashboard" class="btn btn-cancel">Cancel</a>
+    </div>
+  </form>
+</div>

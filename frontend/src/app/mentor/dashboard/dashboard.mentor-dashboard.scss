@@ -1,0 +1,215 @@
+.mentor-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .loading, .error {
+    text-align: center;
+    padding: 2rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  .error {
+    background: #ffe0e0;
+    color: #d32f2f;
+
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #d32f2f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background: #b71c1c;
+      }
+    }
+  }
+
+  .analytics-content {
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+
+      .card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+
+        h3 {
+          margin: 0 0 0.5rem 0;
+          color: #666;
+          font-size: 0.9rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .value {
+          margin: 0;
+          font-size: 2.5rem;
+          font-weight: bold;
+          color: #2196f3;
+
+          &.highlight {
+            color: #ff9800;
+          }
+        }
+      }
+    }
+
+    .submission-status {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+
+      h3 {
+        margin-top: 0;
+        color: #333;
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+
+        .status-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 1rem;
+          background: #f5f5f5;
+          border-radius: 6px;
+
+          .label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+          }
+
+          .count {
+            font-size: 1.8rem;
+            font-weight: bold;
+
+            &.approved {
+              color: #4caf50;
+            }
+
+            &.pending {
+              color: #ff9800;
+            }
+
+            &.rejected {
+              color: #f44336;
+            }
+
+            &.total {
+              color: #2196f3;
+            }
+          }
+        }
+      }
+    }
+
+    .student-breakdown {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+
+      h3 {
+        margin-top: 0;
+        color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+          background: #f5f5f5;
+
+          tr {
+            th {
+              padding: 1rem;
+              text-align: left;
+              font-weight: 600;
+              color: #666;
+              border-bottom: 2px solid #ddd;
+            }
+          }
+        }
+
+        tbody {
+          tr {
+            &:hover {
+              background: #f9f9f9;
+            }
+
+            td {
+              padding: 1rem;
+              border-bottom: 1px solid #eee;
+              color: #333;
+            }
+          }
+        }
+      }
+
+      .no-data {
+        text-align: center;
+        padding: 2rem;
+        color: #999;
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+
+        &.btn-primary {
+          background: #2196f3;
+          color: white;
+
+          &:hover {
+            background: #1976d2;
+          }
+        }
+
+        &.btn-success {
+          background: #4caf50;
+          color: white;
+
+          &:hover {
+            background: #388e3c;
+          }
+        }
+      }
+    }
+  }
+}

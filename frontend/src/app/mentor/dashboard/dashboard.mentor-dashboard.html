@@ -1,0 +1,99 @@
+<!-- Mentor Dashboard Template -->
+<div class="mentor-dashboard">
+  <h1>Mentor Dashboard</h1>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading analytics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadAnalytics()">Retry</button>
+  </div>
+
+  <!-- Analytics Content -->
+  <div *ngIf="analytics && !isLoading" class="analytics-content">
+    
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="card">
+        <h3>Total Mentees</h3>
+        <p class="value">{{ analytics.totalMentees }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Total AICTE Points</h3>
+        <p class="value">{{ analytics.totalPointsEarned }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Total Hours</h3>
+        <p class="value">{{ analytics.totalHours }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Pending Submissions</h3>
+        <p class="value highlight">{{ analytics.submissions.pending }}</p>
+      </div>
+    </div>
+
+    <!-- Submission Status -->
+    <div class="submission-status">
+      <h3>Submission Status</h3>
+      <div class="status-grid">
+        <div class="status-item">
+          <span class="label">Approved</span>
+          <span class="count approved">{{ analytics.submissions.approved }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Pending</span>
+          <span class="count pending">{{ analytics.submissions.pending }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Rejected</span>
+          <span class="count rejected">{{ analytics.submissions.rejected }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Total</span>
+          <span class="count total">{{ analytics.submissions.total }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Breakdown Table -->
+    <div class="student-breakdown">
+      <h3>Mentee Breakdown</h3>
+      <table *ngIf="analytics.studentBreakdown.length > 0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Student ID</th>
+            <th>AICTE Points</th>
+            <th>Hours</th>
+            <th>Submissions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of analytics.studentBreakdown">
+            <td>{{ student.name }}</td>
+            <td>{{ student.studentId }}</td>
+            <td>{{ student.totalPoints }}</td>
+            <td>{{ student.totalHours }}</td>
+            <td>{{ student.submissionCount }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="analytics.studentBreakdown.length === 0" class="no-data">
+        <p>No mentees assigned yet.</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <a href="/mentor/review-submissions" class="btn btn-primary">Review Submissions</a>
+      <a href="/mentor/create-event" class="btn btn-success">Create Event</a>
+    </div>
+  </div>
+</div>

@@ -10,10 +10,11 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'mentor' | 'admin';
   studentId?: string;
   totalPoints: number;
   totalHours?: number;  // ✅ Calculated as totalPoints * 4
+  mentor?: string; // ✅ Mentor ID if user is a student
 }
 
 /* ===================== NGO ===================== */
@@ -44,6 +45,8 @@ export interface Event {
   currentParticipants: number;
   status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
   createdBy: string;
+  createdByRole?: 'admin' | 'mentor'; // ✅ Indicates who created the event
+  createdForMentor?: string; // ✅ Mentor ID if mentor-scoped event
 }
 
 /* ===================== REGISTRATION ===================== */

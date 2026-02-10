@@ -1,0 +1,164 @@
+<!-- Mentor Review Submissions Template -->
+<div class="mentor-review-submissions">
+  <div class="page-header">
+    <a href="/mentor/dashboard" class="btn-back">← Back to Dashboard</a>
+    <h1>Review Submissions</h1>
+  </div>
+
+  <!-- Error Messages -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button (click)="error = null" class="close-btn">×</button>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading submissions...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="content">
+    
+    <!-- Filter Controls -->
+    <div class="filter-section">
+      <label for="status-filter">Filter by Status:</label>
+      <select 
+        id="status-filter" 
+        [(ngModel)]="filterStatus"
+        (change)="filterSubmissions()"
+        class="filter-select"
+      >
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+        <option value="all">All</option>
+      </select>
+    </div>
+
+    <!-- Submissions List -->
+    <div class="submissions-container">
+      <div *ngIf="filteredSubmissions.length === 0" class="no-data">
+        <p>No submissions found with the current filter.</p>
+      </div>
+
+      <div *ngFor="let submission of filteredSubmissions" class="submission-card">
+        <div class="submission-header">
+          <div class="submission-info">
+            <h3>{{ submission.event.title }}</h3>
+            <p class="student-name">{{ submission.student.name }}</p>
+            <p class="student-id">ID: {{ submission.student.studentId }}</p>
+          </div>
+          <span [ngClass]="getStatusClass(submission.status)" class="status-badge">
+            {{ submission.status | uppercase }}
+          </span>
+        </div>
+
+        <div class="submission-details">
+          <div class="detail-row">
+            <span class="label">Event:</span>
+            <span class="value">{{ submission.event.title }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Points:</span>
+            <span class="value">{{ submission.event.pointsAwarded }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Hours:</span>
+            <span class="value">{{ submission.event.hoursEquivalent }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Activity Type:</span>
+            <span class="value">{{ submission.event.activityType }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Submitted:</span>
+            <span class="value">{{ submission.createdAt | date:'short' }}</span>
+          </div>
+        </div>
+
+        <!-- Proof Section -->
+        <div class="proof-section">
+          <h4>Proof of Participation</h4>
+          <div *ngIf="submission.proofData.startsWith('/uploads/')" class="proof-image">
+            <img [src]="submission.proofData" alt="Submission proof" />
+          </div>
+          <div *ngIf="!submission.proofData.startsWith('/uploads/')" class="proof-text">
+            <a [href]="submission.proofData" target="_blank">{{ submission.proofData }}</a>
+          </div>
+        </div>
+
+        <!-- Review Button (only for pending) -->
+        <div *ngIf="submission.status === 'pending'" class="actions">
+          <button 
+            class="btn btn-review"
+            (click)="openReviewModal(submission)"
+          >
+            Review Submission
+          </button>
+        </div>
+
+        <!-- Review Notes (for reviewed submissions) -->
+        <div *ngIf="submission.reviewNotes && submission.status !== 'pending'" class="review-notes">
+          <p><strong>Review Notes:</strong> {{ submission.reviewNotes }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div *ngIf="selectedSubmission" class="modal-overlay" (click)="closeReviewModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Review Submission</h2>
+        <button class="close-btn" (click)="closeReviewModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="submission-summary">
+          <p><strong>Student:</strong> {{ selectedSubmission.student.name }}</p>
+          <p><strong>Event:</strong> {{ selectedSubmission.event.title }}</p>
+          <p><strong>Points:</strong> {{ selectedSubmission.event.pointsAwarded }}</p>
+        </div>
+
+        <div class="form-group">
+          <label for="review-notes">Review Notes (Optional):</label>
+          <textarea 
+            id="review-notes"
+            [(ngModel)]="reviewNotes"
+            placeholder="Add any feedback or notes..."
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button 
+          class="btn btn-danger"
+          (click)="rejectSubmission()"
+          [disabled]="isProcessing"
+        >
+          Reject
+        </button>
+        <button 
+          class="btn btn-cancel"
+          (click)="closeReviewModal()"
+          [disabled]="isProcessing"
+        >
+          Cancel
+        </button>
+        <button 
+          class="btn btn-success"
+          (click)="approveSubmission()"
+          [disabled]="isProcessing"
+        >
+          {{ isProcessing ? 'Processing...' : 'Approve' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

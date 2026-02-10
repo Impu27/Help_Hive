@@ -1,0 +1,83 @@
+<!-- Mentor Events Template -->
+<div class="mentor-events">
+  <div class="header">
+    <h1>Your Events</h1>
+    <a href="/mentor/create-event" class="btn btn-create">+ Create New Event</a>
+  </div>
+
+  <!-- Error Messages -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button (click)="error = null; loadEvents()" class="btn-retry">Retry</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading events...</p>
+  </div>
+
+  <!-- Events Grid -->
+  <div *ngIf="!isLoading" class="events-container">
+    <div *ngIf="events.length === 0" class="no-events">
+      <p>No events created yet.</p>
+      <a href="/mentor/create-event" class="btn btn-primary">Create Your First Event</a>
+    </div>
+
+    <div *ngFor="let event of events" class="event-card">
+      <div class="event-header">
+        <h3>{{ event.title }}</h3>
+        <span [ngClass]="getStatusClass(event.status)" class="status-badge">
+          {{ event.status | uppercase }}
+        </span>
+      </div>
+
+      <div class="event-body">
+        <p class="description">{{ event.description }}</p>
+
+        <div class="event-details">
+          <div class="detail">
+            <span class="label">Date:</span>
+            <span class="value">{{ formatDate(event.eventDate) }}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Activity Type:</span>
+            <span class="value">{{ event.activityType }}</span>
+          </div>
+          <div class="detail">
+            <span class="label">AICTE Points:</span>
+            <span class="value">{{ event.pointsAwarded }}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Hours:</span>
+            <span class="value">{{ event.hoursEquivalent }}</span>
+          </div>
+          <div *ngIf="event.location" class="detail">
+            <span class="label">Location:</span>
+            <span class="value">{{ event.location }}</span>
+          </div>
+        </div>
+
+        <!-- Capacity Indicator -->
+        <div class="capacity-section">
+          <div class="capacity-header">
+            <span class="label">Participant Capacity:</span>
+            <span class="capacity-status">
+              {{ event.currentParticipants }} / {{ event.maxParticipants }} 
+              ({{ getCapacityPercentage(event.currentParticipants, event.maxParticipants) }}%)
+            </span>
+          </div>
+          <div class="capacity-bar">
+            <div 
+              class="capacity-fill" 
+              [style.width.%]="getCapacityPercentage(event.currentParticipants, event.maxParticipants)"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-footer">
+        <small class="event-id">ID: {{ event._id }}</small>
+      </div>
+    </div>
+  </div>
+</div>

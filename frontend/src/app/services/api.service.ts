@@ -169,4 +169,47 @@ createEvent(eventData: Partial<Event>): Observable<ApiResponse<Event>> {
       { headers: this.getHeaders() }
     );
   }
+
+  // ================= GENERIC HTTP METHODS =================
+  /**
+   * Generic GET request
+   */
+  get<T = any>(endpoint: string, params?: any): Observable<T> {
+    return this.http.get<T>(`${this.apiUrl}${endpoint}`, {
+      headers: this.getHeaders(),
+      params: params || {}
+    });
+  }
+
+  /**
+   * Generic POST request
+   */
+  post<T = any>(endpoint: string, data: any): Observable<T> {
+    return this.http.post<T>(
+      `${this.apiUrl}${endpoint}`,
+      data,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /**
+   * Generic PATCH request
+   */
+  patch<T = any>(endpoint: string, data: any): Observable<T> {
+    return this.http.patch<T>(
+      `${this.apiUrl}${endpoint}`,
+      data,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /**
+   * Generic DELETE request
+   */
+  delete<T = any>(endpoint: string): Observable<T> {
+    return this.http.delete<T>(
+      `${this.apiUrl}${endpoint}`,
+      { headers: this.getHeaders() }
+    );
+  }
 }

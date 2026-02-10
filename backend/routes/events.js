@@ -41,22 +41,84 @@ async function updateEventStatuses(events) {
 
 /**
  * @route   GET /api/events
- * @desc    Get all events (with auto-status update)
+ * @desc    Get events filtered by user role and mentor assignment
  * @access  Private
+ * @CO      CO3 - REST API
+ * 
+ * Filtering Logic:
+ * - Admin: See all events
+ * - Mentor: See events they created + all admin-created events
+ * - Student: See events created by their assigned mentor + all admin-created events
  */
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const { status, activityType, ngo } = req.query;
+    const userId = req.user?.id || req.user?._id;
+    const userRole = req.user?.role;
+
+    console.log(`📨 GET /events - User: ${req.user?.email}, Role: ${userRole}, UserId: ${userId}`);
 
     const query = {};
     if (status) query.status = status;
     if (activityType) query.activityType = activityType;
     if (ngo) query.ngo = ngo;
 
-    let events = await Event.find(query)
+    // Build role-based filter
+    let roleFilter = {};
+    
+    if (userRole === 'admin') {
+      // Admins see all events
+      console.log('👤 Admin user - showing all events');
+      roleFilter = {};
+    } else if (userRole === 'mentor') {
+      // Mentors see: events they created + events from admin
+      console.log('👤 Mentor user - filtering events');
+      roleFilter = {
+        $or: [
+          { createdBy: userId },           // Events they created
+          { createdByRole: 'admin' }       // Events created by admin
+        ]
+      };
+    } else if (userRole === 'student') {
+      // Students see: events from their assigned mentor + events from admin
+      console.log('👤 Student user - filtering by mentor');
+      
+      // First, find the student and their mentor
+      const User = require('../models/User');
+      const student = await User.findById(userId).select('mentor');
+      
+      if (!student) {
+        console.log('⚠️  Student not found:', userId);
+        return res.status(404).json({
+          success: false,
+          message: 'Student record not found'
+        });
+      }
+      
+      const mentorId = student.mentor;
+      console.log(`📌 Student's mentor: ${mentorId}`);
+      
+      roleFilter = {
+        $or: [
+          { createdBy: mentorId, createdByRole: 'mentor' },  // Events from their mentor
+          { createdByRole: 'admin' }                          // Events from admin
+        ]
+      };
+    } else {
+      console.log('⚠️  Unknown role:', userRole);
+      roleFilter = { createdByRole: 'admin' }; // Default: only show admin events
+    }
+
+    // Combine filters
+    const finalQuery = { ...query, ...roleFilter };
+    console.log('🔍 Query:', JSON.stringify(finalQuery));
+
+    let events = await Event.find(finalQuery)
       .populate('ngo', 'name causes officialWebsite')
       .populate('createdBy', 'name email')
       .sort({ eventDate: 1 });
+
+    console.log(`✅ Found ${events.length} events`);
 
     // Run the auto-update logic
     events = await updateEventStatuses(events);
@@ -68,10 +130,11 @@ router.get('/', authMiddleware, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get events error:', error);
+    console.error('❌ Get events error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error while fetching events'
+      message: 'Server error while fetching events',
+      error: error.message
     });
   }
 });

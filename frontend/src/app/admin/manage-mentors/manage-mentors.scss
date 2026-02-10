@@ -1,0 +1,309 @@
+// Manage Mentors Styles
+.manage-mentors {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .header {
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #7f8c8d;
+    }
+  }
+
+  // Alerts
+  .alert {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+
+    &.alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    &.alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  }
+
+ // Loading
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+  }
+
+  // Content
+  .content {
+    // Mentors Grid
+    .mentors-section {
+      h2 {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+      }
+
+      .mentors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .mentor-card {
+        background: white;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover:not(.inactive) {
+          border-color: #3498db;
+          box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+          transform: translateY(-2px);
+        }
+
+        &.inactive {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        h3 {
+          font-size: 1.3rem;
+          color: #2c3e50;
+          margin-bottom: 0.5rem;
+        }
+
+        .email {
+          color: #3498db;
+          font-size: 0.9rem;
+          margin-bottom: 0.3rem;
+        }
+
+        .phone {
+          color: #7f8c8d;
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .status {
+          display: inline-block;
+          padding: 0.3rem 0.8rem;
+          background-color: #d4edda;
+          color: #155724;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 500;
+
+          &.inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+          }
+        }
+      }
+    }
+
+    // Assignment Section
+    .assign-section {
+      h2 {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+
+        .btn-back {
+          background: none;
+          border: none;
+          color: #3498db;
+          font-size: 1rem;
+          cursor: pointer;
+          margin-right: 1rem;
+          padding: 0.5rem;
+
+          &:hover {
+            color: #2980b9;
+          }
+        }
+      }
+
+      .assignment-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+
+        .assigned-students,
+        .available-students {
+          h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+          }
+
+          .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #ecf0f1;
+          }
+
+          .student-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid #ecf0f1;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+
+            &.assigned {
+              justify-content: space-between;
+              border-left: 4px solid #27ae60;
+            }
+
+            input[type="checkbox"] {
+              width: 18px;
+              height: 18px;
+              cursor: pointer;
+              flex-shrink: 0;
+            }
+
+            .student-info {
+              flex: 1;
+              min-width: 0;
+
+              .name {
+                font-weight: 600;
+                color: #2c3e50;
+                margin: 0;
+              }
+
+              .details {
+                font-size: 0.85rem;
+                color: #7f8c8d;
+                margin: 0;
+              }
+            }
+
+            .btn-remove {
+              background-color: #e74c3c;
+              color: white;
+              border: none;
+              padding: 0.5rem 1rem;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 0.85rem;
+              transition: background-color 0.3s ease;
+
+              &:hover {
+                background-color: #c0392b;
+              }
+            }
+
+            &:hover:not(.assigned) {
+              border-color: #3498db;
+              background-color: #f8fbfe;
+            }
+
+            label & {
+              cursor: pointer;
+            }
+          }
+
+          .no-data {
+            padding: 2rem 1rem;
+            text-align: center;
+            color: #7f8c8d;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #ecf0f1;
+
+            p {
+              margin: 0;
+            }
+          }
+        }
+      }
+
+      .actions {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ecf0f1;
+
+        .btn {
+          padding: 0.75rem 2rem;
+          border: none;
+          border-radius: 6px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-weight: 600;
+
+          &.btn-primary {
+            background-color: #3498db;
+            color: white;
+
+            &:hover:not(:disabled) {
+              background-color: #2980b9;
+            }
+
+            &:disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+            }
+          }
+
+          &.btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+
+            &:hover {
+              background-color: #7f8c8d;
+            }
+          }
+        }
+      }
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 2rem;
+      color: #7f8c8d;
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}

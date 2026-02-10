@@ -71,4 +71,30 @@ const studentOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { authMiddleware, adminOnly, studentOnly };
+/**
+ * Role-based access control - Mentor only
+ */
+const mentorOnly = (req, res, next) => {
+  if (req.user.role !== 'mentor') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied: Mentor privileges required'
+    });
+  }
+  next();
+};
+
+/**
+ * Role-based access control - Admin only
+ */
+const adminRole = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied: Admin privileges required'
+    });
+  }
+  next();
+};
+
+module.exports = { authMiddleware, adminOnly, studentOnly, mentorOnly, adminRole };

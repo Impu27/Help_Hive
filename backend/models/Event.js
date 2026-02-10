@@ -68,6 +68,17 @@ const eventSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  createdByRole: {
+    type: String,
+    enum: ['admin', 'mentor'],
+    default: 'admin'
+  },
+  createdForMentor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+    // Only set if event is mentor-scoped
   }
 }, {
   timestamps: true

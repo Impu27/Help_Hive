@@ -1,0 +1,115 @@
+<!-- Manage Mentors Template -->
+<div class="manage-mentors">
+  <div class="header">
+    <h1>Manage Mentor Assignments</h1>
+    <p class="subtitle">Assign students to mentors</p>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="content">
+    <!-- Mentors List View -->
+    <div *ngIf="displayMode === 'mentors' && !selectedMentor" class="mentors-section">
+      <h2>Select a Mentor</h2>
+      <div class="mentors-grid">
+        <div
+          *ngFor="let mentor of mentors"
+          class="mentor-card"
+          [class.inactive]="!mentor.isActive"
+          (click)="selectMentor(mentor)"
+        >
+          <h3>{{ mentor.name }}</h3>
+          <p class="email">{{ mentor.email }}</p>
+          <p class="phone">📱 {{ mentor.phone }}</p>
+          <span class="status" [class.inactive]="!mentor.isActive">
+            {{ mentor.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+      </div>
+      <div *ngIf="mentors.length === 0" class="no-data">
+        <p>No mentors found</p>
+      </div>
+    </div>
+
+    <!-- Student Assignment View -->
+    <div *ngIf="displayMode === 'students' && selectedMentor" class="assign-section">
+      <div class="section-header">
+        <button class="btn-back" (click)="clearSelection()">← Back</button>
+        <h2>Assign Students to {{ selectedMentor.name }}</h2>
+      </div>
+
+      <div class="assignment-container">
+        <!-- Assigned Students -->
+        <div class="assigned-students">
+          <h3>Currently Assigned ({{ assignedStudents.length }})</h3>
+          <div class="student-list">
+            <div *ngFor="let student of assignedStudents" class="student-item assigned">
+              <div class="student-info">
+                <p class="name">{{ student.name }}</p>
+                <p class="details">{{ student.email }} | ID: {{ student.studentId }}</p>
+              </div>
+              <button
+                class="btn-remove"
+                (click)="removeStudent(selectedMentor!._id, student._id, student.name)"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+          <div *ngIf="assignedStudents.length === 0" class="no-data">
+            <p>No students assigned</p>
+          </div>
+        </div>
+
+        <!-- Available Students -->
+        <div class="available-students">
+          <h3>Available Students ({{ getAvailableStudents().length }})</h3>
+          <div class="student-list">
+            <label *ngFor="let student of getAvailableStudents()" class="student-item">
+              <input
+                type="checkbox"
+                [checked]="isStudentSelected(student._id)"
+                (change)="toggleStudentSelection(student)"
+              />
+              <div class="student-info">
+                <p class="name">{{ student.name }}</p>
+                <p class="details">{{ student.email }} | ID: {{ student.studentId }}</p>
+              </div>
+            </label>
+          </div>
+          <div *ngIf="getAvailableStudents().length === 0" class="no-data">
+            <p>All students are assigned</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button
+          class="btn btn-primary"
+          [disabled]="selectedStudents.size === 0 || isLoading"
+          (click)="assignStudents()"
+        >
+          Assign {{ selectedStudents.size > 0 ? selectedStudents.size : '' }} Student(s)
+        </button>
+        <button class="btn btn-secondary" (click)="clearSelection()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

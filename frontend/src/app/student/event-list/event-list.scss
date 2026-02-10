@@ -58,6 +58,22 @@
   }
 }
 
+/* Filter Info Box */
+.filter-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  
+  p {
+    margin: 0;
+    color: #1565c0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
 /* Integrated Event Card Styles */
 .event-card {
   background: white;

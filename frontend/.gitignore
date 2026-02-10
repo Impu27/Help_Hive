@@ -42,4 +42,10 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
+# Ignore uploaded proof files
+backend/uploads/
+backend/uploads/**
 
+
+# Ignore markdown documentation files
+*.md

@@ -20,9 +20,9 @@
       <div class="filter-group">
         <label>Status</label>
         <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
-          <option value="all">All Status</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="ongoing">Ongoing</option>
+          <option value="all">All Status (Active Events)</option>
+          <option value="upcoming">Upcoming Only</option>
+          <option value="ongoing">Ongoing Only</option>
           <option value="completed">Completed</option>
         </select>
       </div>
@@ -37,7 +37,8 @@
         </select>
       </div>
     </div>
-  </div>
+
+    
 
   <div *ngIf="loading" class="loading">Loading events...</div>
   <div *ngIf="error" class="error-message">{{ error }}</div>

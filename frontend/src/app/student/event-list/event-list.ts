@@ -140,13 +140,28 @@ export class EventListComponent implements OnInit {
         event.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         event.ngo.name.toLowerCase().includes(this.searchQuery.toLowerCase());
 
-      return statusMatch && activityMatch && searchMatch;
+      // Smart filtering: Hide completed events unless:
+      // 1. User is explicitly viewing "Completed" events, OR
+      // 2. User has registered for this event (history/reference)
+      let completionMatch = true;
+      if (this.selectedStatus !== 'completed' && event.status === 'completed') {
+        // Only show completed event if user is registered for it
+        completionMatch = this.isRegistered(event._id);
+      }
+
+      return statusMatch && activityMatch && searchMatch && completionMatch;
     });
     this.cdr.detectChanges(); // ✅ ensure filtered list renders immediately
   }
 
   isRegistered(eventId: string): boolean {
     return this.myRegistrations.has(eventId);
+  }
+
+  hasUnregisteredCompletedEvents(): boolean {
+    return this.events.some(e => 
+      e.status === 'completed' && !this.isRegistered(e._id)
+    );
   }
 
   isEventFull(event: Event): boolean {

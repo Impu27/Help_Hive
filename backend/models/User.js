@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['student', 'admin'],
+    enum: ['student', 'mentor', 'admin'],
     default: 'student'
   },
   studentId: {
@@ -41,6 +41,22 @@ const userSchema = new mongoose.Schema({
     sparse: true, // Allows null but enforces uniqueness when present
     unique: true,
     trim: true
+  },
+  mentor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+    // Only students have mentors
+    validate: {
+      validator: async function(value) {
+        // Allow null for mentors and admins
+        if (this.role === 'mentor' || this.role === 'admin') {
+          return value === null;
+        }
+        return true;
+      },
+      message: 'Only students can have a mentor assigned'
+    }
   },
   totalPoints: {
     type: Number,
@@ -58,6 +74,8 @@ const userSchema = new mongoose.Schema({
 // Index for faster queries
 userSchema.index({ email: 1 });
 userSchema.index({ studentId: 1 });
+userSchema.index({ mentor: 1 }); // For mentor lookups
+userSchema.index({ role: 1 }); // For role-based queries
 
 // ===== PRE-SAVE HOOK =====
 // Hash password before saving

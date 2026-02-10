@@ -26,6 +26,10 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
     return router.createUrlTree(['/student/dashboard']);
   }
 
+  if (user?.role === 'mentor') {
+    return router.createUrlTree(['/mentor/dashboard']);
+  }
+
   if (user?.role === 'admin') {
     return router.createUrlTree(['/admin/dashboard']);
   }

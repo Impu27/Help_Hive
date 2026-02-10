@@ -40,6 +40,32 @@ export const routes: Routes = [
     ]
   },
 
+  // Mentor Routes
+  {
+    path: 'mentor',
+    canActivate: [authGuard, roleGuard],
+    data: { role: 'mentor' },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { 
+        path: 'dashboard', 
+        loadComponent: () => import('./mentor/dashboard/dashboard.mentor-dashboard').then(m => m.MentorDashboardComponent) 
+      },
+      { 
+        path: 'events', 
+        loadComponent: () => import('./mentor/events/mentor-events').then(m => m.MentorEventsComponent) 
+      },
+      { 
+        path: 'create-event', 
+        loadComponent: () => import('./mentor/create-event/mentor-create-event').then(m => m.MentorCreateEventComponent) 
+      },
+      { 
+        path: 'review-submissions', 
+        loadComponent: () => import('./mentor/review-submissions/mentor-review-submissions').then(m => m.MentorReviewSubmissionsComponent) 
+      }
+    ]
+  },
+
   // Admin Routes
   {
     path: 'admin',
@@ -58,6 +84,10 @@ export const routes: Routes = [
       { 
         path: 'review-submissions', 
         loadComponent: () => import('./admin/review-submissions/review-submissions').then(m => m.ReviewSubmissionsComponent) 
+      },
+      { 
+        path: 'manage-mentors', 
+        loadComponent: () => import('./admin/manage-mentors/manage-mentors').then(m => m.ManageMentorsComponent) 
       }
     ]
   },

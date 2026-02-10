@@ -1,0 +1,411 @@
+.mentor-review-submissions {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .page-header {
+    position: relative;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .btn-back {
+      padding: 0.5rem 1rem;
+      background: #f5f5f5;
+      color: #0066cc;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background: #e0e0e0;
+        color: #0052a3;
+      }
+    }
+
+    h1 {
+      margin: 0;
+      color: #333;
+      flex: 1;
+    }
+  }
+
+  h1 {
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .alert {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &.alert-error {
+      background: #ffe0e0;
+      color: #d32f2f;
+    }
+
+    &.alert-success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .content {
+    .filter-section {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      label {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .filter-select {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+
+        &:focus {
+          outline: none;
+          border-color: #2196f3;
+          box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+      }
+    }
+
+    .submissions-container {
+      .no-data {
+        text-align: center;
+        padding: 3rem;
+        background: #f5f5f5;
+        border-radius: 8px;
+        color: #999;
+      }
+
+      .submission-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+
+        .submission-header {
+          padding: 1.5rem;
+          border-bottom: 1px solid #eee;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+
+          .submission-info {
+            flex: 1;
+
+            h3 {
+              margin: 0 0 0.5rem 0;
+              color: #333;
+            }
+
+            .student-name {
+              margin: 0.25rem 0;
+              color: #666;
+              font-weight: 500;
+            }
+
+            .student-id {
+              margin: 0.25rem 0 0 0;
+              color: #999;
+              font-size: 0.9rem;
+            }
+          }
+
+          .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+
+            &.status-pending {
+              background: #fff3cd;
+              color: #856404;
+            }
+
+            &.status-approved {
+              background: #d4edda;
+              color: #155724;
+            }
+
+            &.status-rejected {
+              background: #f8d7da;
+              color: #721c24;
+            }
+          }
+        }
+
+        .submission-details {
+          padding: 1.5rem;
+          border-bottom: 1px solid #eee;
+
+          .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f5f5f5;
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            .label {
+              font-weight: 600;
+              color: #666;
+              min-width: 120px;
+            }
+
+            .value {
+              color: #333;
+              text-align: right;
+            }
+          }
+        }
+
+        .proof-section {
+          padding: 1.5rem;
+          border-bottom: 1px solid #eee;
+          background: #f9f9f9;
+
+          h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 0.95rem;
+          }
+
+          .proof-image {
+            text-align: center;
+
+            img {
+              max-width: 100%;
+              max-height: 400px;
+              border-radius: 4px;
+            }
+          }
+
+          .proof-text {
+            a {
+              color: #2196f3;
+              text-decoration: none;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        .review-notes {
+          padding: 1rem 1.5rem;
+          background: #f0f7ff;
+
+          p {
+            margin: 0;
+            color: #333;
+          }
+        }
+
+        .actions {
+          padding: 1.5rem;
+          display: flex;
+          gap: 1rem;
+
+          .btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &.btn-review {
+              background: #2196f3;
+              color: white;
+
+              &:hover {
+                background: #1976d2;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Modal Styles
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+
+      .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h2 {
+          margin: 0;
+          color: #333;
+        }
+
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          padding: 0;
+        }
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+
+        .submission-summary {
+          background: #f5f5f5;
+          padding: 1rem;
+          border-radius: 4px;
+          margin-bottom: 1.5rem;
+
+          p {
+            margin: 0.5rem 0;
+            color: #333;
+
+            &:first-child {
+              margin-top: 0;
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+
+        .form-group {
+          label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+          }
+
+          textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+
+            &:focus {
+              outline: none;
+              border-color: #2196f3;
+              box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+            }
+          }
+        }
+      }
+
+      .modal-footer {
+        padding: 1.5rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+
+        .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 4px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &.btn-success {
+            background: #4caf50;
+            color: white;
+
+            &:hover:not(:disabled) {
+              background: #388e3c;
+            }
+          }
+
+          &.btn-danger {
+            background: #f44336;
+            color: white;
+
+            &:hover:not(:disabled) {
+              background: #d32f2f;
+            }
+          }
+
+          &.btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+
+            &:hover:not(:disabled) {
+              background: #d0d0d0;
+            }
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}

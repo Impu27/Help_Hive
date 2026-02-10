@@ -8,6 +8,14 @@ module.exports = {
   // Based on AICTE guidelines: Each activity point = 4 hours of volunteering
   HOURS_PER_POINT: 4,
 
+  // Allowed email domains for registration
+  // Only users with these email domains can register
+  ALLOWED_EMAIL_DOMAINS: [
+    'gmail.com',
+    'rvce.edu.in',
+    'helphive.com'
+  ],
+
   // Event status values
   EVENT_STATUS: {
     UPCOMING: 'upcoming',

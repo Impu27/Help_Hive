@@ -211,6 +211,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs'); // Added for manual hashing
 const User = require('../models/User');
 const { authMiddleware } = require('../middleware/auth');
+const { validateEmailForRegistration } = require('../utils/emailValidator');
 
 /**
  * @route   POST /api/auth/register
@@ -227,6 +228,15 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'All fields including phone number are required'
+      });
+    }
+
+    // ✅ VALIDATE EMAIL DOMAIN (Security - Backend check is mandatory)
+    const emailValidation = validateEmailForRegistration(email);
+    if (!emailValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: emailValidation.message
       });
     }
 

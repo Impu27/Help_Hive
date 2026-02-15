@@ -13,8 +13,16 @@ const app = express();
 
 // ===== MIDDLEWARE =====
 // CO4: Enable frontend-backend communication
+//app.use(cors({
+  //origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+  //credentials: true
+//}));
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+  origin: [
+    'http://localhost:4200',
+    'https://help-hive-alpha.vercel.app',
+    'https://help-hive-1ieptcwst-impus-projects.vercel.app'
+  ],
   credentials: true
 }));
 

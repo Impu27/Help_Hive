@@ -71,9 +71,6 @@
         </option>
         <option *ngFor="let ngo of ngos" [value]="ngo._id">{{ ngo.name }}</option>
       </select>
-      <small *ngIf="ngos.length > 0" style="color: #666; display: block; margin-top: 4px;">
-        ✅ {{ ngos.length }} NGO(s) loaded
-      </small>
       <small *ngIf="isLoadingNgos" style="color: #0066cc; display: block; margin-top: 4px;">
         ⏳ Loading NGOs... Check browser console for details
       </small>

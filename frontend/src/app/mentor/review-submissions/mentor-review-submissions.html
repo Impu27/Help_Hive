@@ -21,8 +21,18 @@
     <p>Loading submissions...</p>
   </div>
 
+  <!-- All Caught Up State -->
+  <div *ngIf="!isLoading && submissions.length === 0" class="all-caught-up">
+    <div class="caught-up-icon">✓</div>
+    <h2>All Caught Up!</h2>
+    <p>Great job! You've reviewed all submissions. There are no pending reviews at the moment.</p>
+    <button class="btn-primary" (click)="navigateToDashboard()">
+      Back to Dashboard
+    </button>
+  </div>
+
   <!-- Main Content -->
-  <div *ngIf="!isLoading" class="content">
+  <div *ngIf="!isLoading && submissions.length > 0" class="content">
     
     <!-- Filter Controls -->
     <div class="filter-section">
@@ -81,15 +91,20 @@
           </div>
         </div>
 
-        <!-- Proof Section -->
+        <!-- Proof Submitted Section -->
         <div class="proof-section">
-          <h4>Proof of Participation</h4>
-          <div *ngIf="submission.proofData.startsWith('/uploads/')" class="proof-image">
-            <img [src]="submission.proofData" alt="Submission proof" />
+          <div class="proof-info">
+            <span class="proof-label">Proof Submitted:</span>
+            <span class="proof-type-badge">{{ getProofTypeBadge(submission) }}</span>
           </div>
-          <div *ngIf="!submission.proofData.startsWith('/uploads/')" class="proof-text">
-            <a [href]="submission.proofData" target="_blank">{{ submission.proofData }}</a>
-          </div>
+          <button 
+            class="btn btn-view-proof"
+            (click)="viewProof(submission, $event)"
+            title="View submitted proof"
+          >
+            <span class="icon">📄</span>
+            View Proof
+          </button>
         </div>
 
         <!-- Review Button (only for pending) -->
@@ -123,6 +138,22 @@
           <p><strong>Student:</strong> {{ selectedSubmission.student.name }}</p>
           <p><strong>Event:</strong> {{ selectedSubmission.event.title }}</p>
           <p><strong>Points:</strong> {{ selectedSubmission.event.pointsAwarded }}</p>
+        </div>
+
+        <!-- Proof Preview Section -->
+        <div class="proof-preview-section">
+          <div class="proof-header">
+            <span class="proof-label">Submitted Proof:</span>
+            <span class="proof-type-badge">{{ getProofTypeBadge(selectedSubmission) }}</span>
+          </div>
+          <button 
+            class="btn btn-view-proof-modal"
+            (click)="viewProof(selectedSubmission)"
+          >
+            <span class="icon">🔍</span>
+            View Proof
+          </button>
+          <p class="proof-hint">Click to open proof in a new tab</p>
         </div>
 
         <div class="form-group">

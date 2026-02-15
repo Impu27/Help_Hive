@@ -3,10 +3,13 @@
  * CO1: Allows mentors to review and approve submissions from their mentees
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
+import { environment } from '../../../environments/environment';
 
 interface Submission {
   _id: string;
@@ -23,9 +26,14 @@ interface Submission {
     activityType: string;
   };
   status: 'pending' | 'approved' | 'rejected';
-  proofData: string;
+  proofData: string; // URL path or base64 image data
+  proofType: 'url' | 'image'; // Backend schema values
+  semester: number;
+  reviewedBy?: string;
+  reviewDate?: Date;
   reviewNotes?: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 @Component({
@@ -35,7 +43,7 @@ interface Submission {
   templateUrl: './mentor-review-submissions.html',
   styleUrls: ['./mentor-review-submissions.scss']
 })
-export class MentorReviewSubmissionsComponent implements OnInit {
+export class MentorReviewSubmissionsComponent implements OnInit, OnDestroy {
   submissions: Submission[] = [];
   filteredSubmissions: Submission[] = [];
   isLoading = true;
@@ -48,30 +56,43 @@ export class MentorReviewSubmissionsComponent implements OnInit {
   isProcessing = false;
   successMessage = '';
 
-  constructor(private apiService: ApiService) {}
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadSubmissions();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadSubmissions(): void {
     this.isLoading = true;
     this.error = null;
 
-    this.apiService.get('/mentor/submissions').subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.submissions = response.data;
+    this.apiService.get('/mentor/submissions')
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.submissions = response.success && response.data ? response.data : [];
           this.filterSubmissions();
+          this.isLoading = false;
+          this.cdr.detectChanges(); // ✅ Force change detection
+        },
+        error: (error: any) => {
+          console.error('Failed to load submissions:', error);
+          this.error = 'Failed to load submissions. Please try again.';
+          this.submissions = [];
+          this.isLoading = false;
+          this.cdr.detectChanges(); // ✅ Ensure UI updates on error
         }
-        this.isLoading = false;
-      },
-      error: (error: any) => {
-        console.error('Failed to load submissions:', error);
-        this.error = 'Failed to load submissions. Please try again.';
-        this.isLoading = false;
-      }
-    });
+      });
   }
 
   filterSubmissions(): void {
@@ -92,6 +113,61 @@ export class MentorReviewSubmissionsComponent implements OnInit {
   closeReviewModal(): void {
     this.selectedSubmission = null;
     this.reviewNotes = '';
+  }
+
+  navigateToDashboard(): void {
+    window.location.href = '/mentor/dashboard';
+  }
+
+  /**
+   * View proof file in a new tab
+   * Same implementation as admin component
+   */
+  viewProof(submission: Submission, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (!submission.proofData) {
+      this.error = 'No proof file available for this submission.';
+      setTimeout(() => this.error = null, 3000);
+      return;
+    }
+
+    console.log('Viewing proof:', { 
+      proofData: submission.proofData, 
+      proofType: submission.proofType 
+    });
+    
+    // If it's a file path (starts with /), construct full URL using serverUrl
+    if (submission.proofData.startsWith('/')) {
+      const fullUrl = `${environment.serverUrl}${submission.proofData}`;
+      console.log('Opening file from:', fullUrl);
+      window.open(fullUrl, '_blank');
+    } else {
+      // If it's a URL, open directly
+      console.log('Opening URL directly');
+      window.open(submission.proofData, '_blank');
+    }
+  }
+
+  /**
+   * Get proof type badge text based on backend's proofType field
+   */
+  getProofTypeBadge(submission: Submission): string {
+    if (submission.proofType === 'url') {
+      // Check if URL ends with common file extensions
+      const urlLower = submission.proofData.toLowerCase();
+      if (urlLower.endsWith('.pdf')) {
+        return 'PDF';
+      } else if (urlLower.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/)) {
+        return 'IMAGE';
+      }
+      return 'FILE';
+    } else if (submission.proofType === 'image') {
+      return 'IMAGE';
+    }
+    return 'FILE';
   }
 
   approveSubmission(): void {

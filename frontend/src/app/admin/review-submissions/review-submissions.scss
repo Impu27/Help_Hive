@@ -3,53 +3,77 @@
 .review-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2.5rem 2rem;
 }
 
 .page-header {
-  margin-bottom: 2rem;
+  margin-bottom: 3.5rem;
+  animation: slideDown 0.6s ease-out;
 
   h1 {
-    color: #1a2332;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    color: var(--primary-navy);
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--accent-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
   }
 
   p {
-    color: #666;
+    color: var(--dark-gray);
     font-size: 1rem;
+    opacity: 0.9;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .loading {
   text-align: center;
-  padding: 3rem;
-  font-size: 1.2rem;
-  color: #666;
+  padding: 4rem 2rem;
+  font-size: 1.1rem;
+  color: var(--dark-gray);
+  background: linear-gradient(135deg, var(--light-gray-2) 0%, var(--light-gray) 100%);
+  border-radius: 16px;
 }
 
 .empty-state {
-  background: white;
-  padding: 3rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, var(--white) 0%, rgba(248, 250, 252, 0.8) 100%);
+  padding: 4rem 2rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
   text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   .empty-icon {
     font-size: 4rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
   }
 
   h3 {
-    color: #1a2332;
+    color: var(--primary-navy);
     font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
   }
 
   p {
-    color: #666;
+    color: var(--dark-gray);
     margin-bottom: 1.5rem;
+    opacity: 0.85;
   }
 }
 
@@ -57,20 +81,22 @@
 .submissions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .submission-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #ff9800;
-  transition: all 0.3s;
+  background: linear-gradient(135deg, var(--white) 0%, rgba(248, 250, 252, 0.8) 100%);
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  border-left: 5px solid var(--warning-orange);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-left: 5px solid var(--warning-orange);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
   }
 }
 
@@ -417,8 +443,13 @@
     padding: 1rem;
   }
 
+  .filter-group {
+    margin-bottom: 1.25rem;
+  }
+
   .submissions-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .submission-header {
@@ -428,6 +459,7 @@
 
   .submission-date {
     text-align: left;
+    font-size: 0.9rem;
   }
 
   .proof-data {
@@ -437,5 +469,138 @@
 
   .modal-content {
     padding: 1.5rem;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-container {
+    padding: 0.75rem;
+  }
+
+  .filter-section {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .filter-group {
+    margin-bottom: 1rem;
+
+    label {
+      font-size: 0.75rem;
+      margin-bottom: 0.3rem;
+    }
+
+    input, select {
+      font-size: 16px;
+      padding: 0.75rem 0.85rem;
+      border-radius: 8px;
+    }
+  }
+
+  .filter-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+
+    button {
+      min-height: 44px;
+      font-size: 0.85rem;
+      padding: 0.7rem;
+    }
+  }
+
+  .submissions-grid {
+    gap: 1.25rem;
+  }
+
+  .submission-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(15, 22, 41, 0.1);
+  }
+
+  .submission-header {
+    gap: 0.75rem;
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    .submission-date {
+      font-size: 0.75rem;
+    }
+  }
+
+  .submission-info {
+    margin: 0.75rem 0;
+    gap: 0.5rem;
+  }
+
+  .proof-data {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .proof-section {
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+
+    h4 {
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+  }
+
+  .submission-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+
+    button {
+      min-height: 44px;
+      font-size: 0.85rem;
+      padding: 0.7rem;
+      border-radius: 8px;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    padding: 1.25rem;
+    border-radius: 16px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    .modal-header {
+      margin-bottom: 1rem;
+
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+
+    .modal-body {
+      font-size: 0.85rem;
+    }
+  }
+
+  .status-badge {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+    border-radius: 12px;
   }
 }

@@ -1,40 +1,60 @@
 /* ===== src/app/student/points-tracker/points-tracker.component.scss ===== */
 
 .points-tracker-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2.5rem 2rem;
 }
 
 .tracker-header {
-  margin-bottom: 2rem;
+  margin-bottom: 3.5rem;
+  animation: slideDown 0.6s ease-out;
 
   h1 {
-    color: #1a2332;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    color: var(--primary-navy);
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--accent-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
   }
 
   p {
-    color: #666;
+    color: var(--dark-gray);
     font-size: 1rem;
+    opacity: 0.9;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 /* Progress Card */
 .progress-card {
-  background: white;
+  background: linear-gradient(135deg, var(--white) 0%, rgba(248, 250, 252, 0.8) 100%);
   padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
   margin-bottom: 2rem;
   text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   h2 {
-    color: #1a2332;
-    font-size: 1.5rem;
+    color: var(--primary-navy);
+    font-size: 1.8rem;
     margin-bottom: 2rem;
+    font-weight: 700;
   }
 }
 
@@ -58,7 +78,7 @@
 
   .progress-fill {
     fill: none;
-    stroke: #f4b400;
+    stroke: var(--secondary-yellow);
     stroke-width: 10;
     stroke-linecap: round;
     stroke-dasharray: 314;
@@ -75,15 +95,20 @@
 
     h3 {
       font-size: 3rem;
-      font-weight: 700;
-      color: #f4b400;
+      font-weight: 800;
+      color: var(--secondary-yellow);
       margin: 0;
+      background: linear-gradient(135deg, var(--secondary-yellow) 0%, var(--secondary-yellow-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     p {
       font-size: 1rem;
-      color: #666;
+      color: var(--dark-gray);
       margin: 0.5rem 0 0 0;
+      font-weight: 500;
     }
   }
 }
@@ -103,53 +128,60 @@
 }
 
 .stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, var(--white) 0%, rgba(248, 250, 252, 0.8) 100%);
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
   text-align: center;
-  transition: transform 0.2s;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
   }
 
   h3 {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: 800;
     margin: 0 0 0.5rem 0;
   }
 
   p {
-    color: #666;
+    color: var(--dark-gray);
     font-size: 0.95rem;
     margin: 0;
+    font-weight: 500;
   }
 
   &.success h3 {
-    color: #34a853;
+    color: var(--accent-green);
   }
 
   &.warning h3 {
-    color: #ff9800;
+    color: var(--warning-orange);
   }
 
   &.danger h3 {
-    color: #dc3545;
+    color: var(--error-red);
   }
 }
 
 /* Submissions Section */
 .submissions-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, var(--white) 0%, rgba(248, 250, 252, 0.8) 100%);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   h2 {
-    color: #1a2332;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
+    color: var(--primary-navy);
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
   }
 }
 
@@ -174,22 +206,27 @@
     grid-template-columns: 2fr 1fr 1fr 1.5fr;
     gap: 1rem;
     padding: 1rem;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--light-gray-3);
     align-items: center;
+    transition: all 0.3s ease;
 
     &.header {
-      background: #f5f5f5;
-      font-weight: 600;
-      color: #1a2332;
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-navy-light) 100%);
+      font-weight: 700;
+      color: var(--white);
       border-radius: 8px 8px 0 0;
-      border-bottom: 2px solid #e0e0e0;
+      border-bottom: 3px solid var(--secondary-yellow);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
     }
 
     &:not(.header) {
-      transition: background 0.2s;
-
+      background: var(--white);
+      
       &:hover {
-        background: #f9f9f9;
+        background: linear-gradient(135deg, rgba(248, 250, 252, 1), rgba(241, 245, 249, 1));
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       }
     }
 
@@ -198,12 +235,12 @@
     }
 
     strong {
-      color: #1a2332;
+      color: var(--primary-navy);
       font-size: 1rem;
     }
 
     p {
-      color: #666;
+      color: var(--dark-gray);
       font-size: 0.875rem;
       margin: 0.25rem 0 0 0;
     }
@@ -227,36 +264,69 @@
 }
 
 .status-pending {
-  background: #fff4e6;
-  color: #ff9800;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.1));
+  color: var(--warning-orange);
 }
 
 .status-approved {
-  background: #e8f5e9;
-  color: #34a853;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1));
+  color: var(--accent-green);
 }
 
 .status-rejected {
-  background: #ffebee;
-  color: #dc3545;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+  color: var(--error-red);
 }
 
 /* Hours Badge */
 .hours-badge {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.1));
+  color: var(--accent-blue);
   padding: 0.375rem 0.875rem;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
   display: inline-block;
   text-align: center;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    padding: 2rem;
+  }
+
+  .primary-stat-card {
+    padding: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .points-tracker-container {
-    padding: 1rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .tracker-header {
+    margin-bottom: 2.5rem;
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+
+  .progress-card {
+    padding: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .progress-circle {
@@ -266,10 +336,19 @@
     .progress-text h3 {
       font-size: 2.5rem;
     }
+
+    .progress-text p {
+      font-size: 0.8rem;
+    }
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .stat-card, .primary-stat-card {
+    padding: 1.75rem;
   }
 
   .submissions-table .table-row {
@@ -284,9 +363,131 @@
     > div::before {
       content: attr(data-label);
       font-weight: 600;
-      color: #1a2332;
+      color: var(--primary-navy);
       display: block;
       margin-bottom: 0.25rem;
+      font-size: 0.85rem;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .points-tracker-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .tracker-header {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+    }
+  }
+
+  .progress-card {
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    border-radius: 18px;
+  }
+
+  .progress-circle {
+    width: 140px;
+    height: 140px;
+
+    .progress-text h3 {
+      font-size: 2rem;
+    }
+
+    .progress-text p {
+      font-size: 0.75rem;
+    }
+
+    circle {
+      filter: drop-shadow(0 2px 8px rgba(15, 22, 41, 0.15));
+    }
+  }
+
+  .progress-info {
+    padding: 1.25rem;
+    gap: 0.75rem;
+
+    .info-item {
+      font-size: 0.8rem;
+    }
+  }
+
+  .stats-grid {
+    gap: 1rem;
+  }
+
+  .stat-card, .primary-stat-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+
+    .stat-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 0.85rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
+    }
+
+    p {
+      font-size: 0.75rem;
+    }
+  }
+
+  .submissions-section {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .submissions-header {
+    margin-bottom: 1.25rem;
+
+    h2 {
+      font-size: 1.1rem;
+    }
+  }
+
+  .submissions-table {
+    border-radius: 12px;
+
+    .table-row {
+      padding: 0.75rem;
+      gap: 0.4rem;
+      border-radius: 10px;
+
+      > div {
+        padding: 0.4rem 0;
+
+        &::before {
+          font-size: 0.75rem;
+          margin-bottom: 0.2rem;
+        }
+      }
+    }
+
+    .table-cell {
+      font-size: 0.8rem;
+      padding: 0.5rem;
+    }
+  }
+
+  .hours-badge {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.7rem;
+    border-radius: 16px;
   }
 }

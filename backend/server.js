@@ -17,8 +17,22 @@ const app = express();
   //origin: process.env.FRONTEND_URL || 'http://localhost:4200',
   //credentials: true
 //}));
+const allowedOrigins = [
+  'http://localhost:4200',
+  'https://help-hive-alpha.vercel.app'
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+  origin: function (origin, callback) {
+    // allow REST tools & server-to-server
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 

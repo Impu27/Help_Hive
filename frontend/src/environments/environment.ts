@@ -1,7 +1,8 @@
 // src/environments/environment.ts
 export const environment = {
   production: true,
-  apiUrl: 'https://helphive-backend-r0pe.onrender.com/api'
+  apiUrl: 'https://helphive-backend-r0pe.onrender.com/api',
+  serverUrl: 'https://helphive-backend-r0pe.onrender.com'
 };
 
 

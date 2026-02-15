@@ -18,11 +18,7 @@ const app = express();
   //credentials: true
 //}));
 app.use(cors({
-  origin: [
-    'http://localhost:4200',
-    'https://help-hive-alpha.vercel.app',
-    'https://help-hive-1ieptcwst-impus-projects.vercel.app'
-  ],
+  origin: process.env.FRONTEND_URL || 'http://localhost:4200',
   credentials: true
 }));
 

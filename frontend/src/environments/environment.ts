@@ -1,4 +1,4 @@
-// src/environments/environment.ts
+// src/environments/environment.ts for vercel
 export const environment = {
   production: true,
   apiUrl: 'https://helphive-backend-r0pe.onrender.com/api',

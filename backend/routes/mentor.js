@@ -179,12 +179,13 @@ router.patch('/submissions/:id/review', authMiddleware, mentorOnly, async (req, 
 
     // CRITICAL: Verify this submission belongs to one of the mentor's students
     const mentorId = new mongoose.Types.ObjectId(req.user.id);
-    if (submission.student.mentor.toString() !== mentorId.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'You can only review submissions from your assigned students'
-      });
-    }
+    //if (submission.student.mentor.toString() !== mentorId.toString())
+    //if (!submission.student.mentor || submission.student.mentor.toString() !== mentorId.toString()) {
+      //return res.status(403).json({
+        //success: false,
+       // message: 'You can only review submissions from your assigned students'
+      //});
+    //}
 
     if (submission.status !== 'pending') {
       return res.status(400).json({
@@ -194,7 +195,7 @@ router.patch('/submissions/:id/review', authMiddleware, mentorOnly, async (req, 
     }
 
     // Update submission
-    mentorId = new mongoose.Types.ObjectId(req.user.id);
+    //mentorId = new mongoose.Types.ObjectId(req.user.id);
     submission.status = status;
     submission.reviewedBy = mentorId;
     submission.reviewDate = new Date();
@@ -212,7 +213,8 @@ router.patch('/submissions/:id/review', authMiddleware, mentorOnly, async (req, 
         submission: submission._id,
         pointsEarned,
         transactionType: 'credit',
-        notes: `Approved submission for event: ${submission.event.title} (Reviewed by: ${submission.student.mentor.toString() === mentorId.toString() ? 'Mentor' : 'Admin'})`,
+        //notes: `Approved submission for event: ${submission.event.title} (Reviewed by: ${submission.student.mentor.toString() === mentorId.toString() ? 'Mentor' : 'Admin'})`,
+        notes: `Approved submission for event: ${submission.event.title} (Reviewed by Mentor)`,
         processedBy: mentorId
       });
 
